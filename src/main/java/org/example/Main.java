@@ -1,17 +1,29 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import Service.Game;
+import java.util.Scanner;
+
+/**
+ *  Classe Principal
+ */
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        // Configurações iniciais
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Bem-vindo ao Campo Minado!");
+        System.out.print("Digite o número de linhas: ");
+        int rows = scanner.nextInt();
+        System.out.print("Digite o número de colunas: ");
+        int cols = scanner.nextInt();
+        System.out.print("Digite o número de minas: ");
+        int mines = scanner.nextInt();
+
+        // Início do jogo
+        Game game = new Game(rows, cols, mines);
+        game.start(scanner);
+
+        scanner.close();
+        System.out.println("Obrigado por jogar Campo Minado!");
     }
 }
