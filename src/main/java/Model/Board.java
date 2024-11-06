@@ -18,8 +18,8 @@ public class Board {
      * @param totalMines    Número de Minas
      */
     public Board(int rows, int cols, int totalMines) {
-        this.rows = rows;
-        this.cols = cols;
+        this.rows = 9;
+        this.cols = 9;
         this.totalMines = totalMines;
         this.grid = new Cell[rows][cols];
 
@@ -70,7 +70,7 @@ public class Board {
      */
     private int countNeighboringMines(int x, int y) {
         int count = 0;
-        for (int i = -1; i <= 1; i++) {
+        for (int i = 1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 int nx = x + i;
                 int ny = y + j;

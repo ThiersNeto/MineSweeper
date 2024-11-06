@@ -9,6 +9,7 @@ import java.util.Scanner;
 public class Game {
     private Board board;
     private boolean gameActive;
+    private Scanner scanner;
 
     /**
      *
@@ -19,30 +20,38 @@ public class Game {
     public Game(int rows, int cols, int mines) {
         this.board = new Board(rows, cols, mines);
         this.gameActive = true;
+        this.scanner = new Scanner(System.in); // Scanner para ler as entradas do jogador
     }
 
     /**
      * Inicia o loop do jogo.
-     * @param scanner      Objeto Scanner
      */
-    public void start(Scanner scanner) {
+    public void start() {
+        // O jogo começa com o tabuleiro impresso
         while (gameActive) {
             board.printBoard();
+
+            // Solicita ao jogador as coordenadas
             System.out.print("Digite as coordenadas (linha e coluna): ");
             int x = scanner.nextInt();
             int y = scanner.nextInt();
 
+            // Verifica se o jogador acertou uma mina
             if (board.hasMine(x, y)) {
                 System.out.println("Você acertou uma mina! Fim de jogo.");
                 gameActive = false;
             } else {
+                // Revela a célula escolhida pelo jogador
                 board.revealCell(x, y);
+
+                // Verifica se o jogador venceu
                 if (checkVictory()) {
                     System.out.println("Parabéns, você venceu!");
                     gameActive = false;
                 }
             }
         }
+        scanner.close();
     }
 
     /**
