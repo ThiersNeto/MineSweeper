@@ -34,6 +34,7 @@ public class Game {
             // Solicita ao jogador as coordenadas
             System.out.print("Digite as coordenadas (linha e coluna): ");
             int x = scanner.nextInt();
+            //valor tem de ser alterado para char pois user escolhe de A a F
             int y = scanner.nextInt();
 
             // Verifica se o jogador acertou uma mina

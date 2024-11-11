@@ -3,7 +3,7 @@ package org.example;
 import Service.Game;
 import java.util.Scanner;
 
-/**
+/**1
  * Classe Principal
  */
 public class Main {
