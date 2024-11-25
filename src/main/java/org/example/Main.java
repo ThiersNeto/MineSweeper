@@ -32,7 +32,7 @@ public class Main {
             System.out.println("=== MENU ===");
             System.out.println("1. Começar Jogo");
             System.out.println("2. Mostrar últimos " + lastWonGames.length + " jogos ganhos");
-            System.out.println("2. Sair");
+            System.out.println("3. Sair");
             System.out.print("Escolha uma opção: ");
             choice = scanner.nextInt();
 
@@ -83,7 +83,7 @@ public class Main {
                 }
             }
 
-            System.out.print("\n\t >");
+            System.out.print("\n");
             boolean toggled;
             //retira a "/" do comando
             switch(slicedCommand[0].substring(1)){
@@ -190,7 +190,7 @@ public class Main {
             case Won:
                 System.out.println(gameBoard);
                 System.out.println("Parabéns, você venceu!");
-
+                //quando chega à sua length dá wrap around pq 10%length(10) = 0
                 lastWonGames[(wonGameCount)% lastWonGames.length] = new Game(currentGameStatus,nickname,gameBoard.toString());
                 wonGameCount++;
                 break;
