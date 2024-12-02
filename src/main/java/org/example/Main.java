@@ -3,11 +3,11 @@ package org.example;
 import java.util.Scanner;
 
 /**
- * Classe Principal
+ * Main Class
  */
 public class Main {
 
-    static int rows = 9, cols = 9, mines = 1;
+    static int rows = 9, cols = 9, mines = 10;
     static int lastGameAmount = 10;
     static Board gameBoard;
     static int gameCount = 1;
@@ -25,7 +25,7 @@ public class Main {
     }
 
     /**
-     * Escreve o menu inicial na consola
+     * Writes the initial menu on the console
      */
     private static void showStartMenu() {
         int choice;
@@ -49,8 +49,8 @@ public class Main {
                 case 3:
                     System.out.println("Obrigado por jogar Campo Minado!");
                     //scanner.close();
-                    System.exit(0);
-                    return;  // Exit the program
+                    System.exit(0); //exit the program
+                    return;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
                     break;
@@ -59,7 +59,7 @@ public class Main {
     }
 
     /**
-     * Lê, interpreta e executa comandos
+     * Reads, interprets and executes commands
      */
     public static void interpretCommands() {
         do {
@@ -74,7 +74,7 @@ public class Main {
                 x = asciiConvert(slicedCommand[1].toUpperCase().charAt(0));
                 y = asciiConvert(slicedCommand[2].toUpperCase().charAt(0));
 
-                // Coordinates are invalid, return to the beginning of the loop
+                //coordinates are invalid, return to the beginning of the loop
                 if (!gameBoard.isCoordinateValid(x, y)) {
                     System.out.println("Coordenadas invalidas!");
                     continue;
@@ -83,7 +83,7 @@ public class Main {
 
             System.out.print("\n");
             boolean toggled;
-            // Remove the "/" from the command
+            //remove the "/" from the command
             switch (slicedCommand[0].substring(1)) {
                 case ("help"):
                     System.out.print('\n');
@@ -120,7 +120,7 @@ public class Main {
             }
             System.out.print('\n');
 
-            // Verifica se o jogador venceu
+            //check if player won
             if (gameBoard.checkVictory()) {
                 currentGameStatus = GameStatus.Won;
                 saveGame();
@@ -133,7 +133,7 @@ public class Main {
     }
 
     /**
-     * Pede a alcunha e inicia o jogo.
+     * Asks for a nickname and begins the game.
      */
     public static void startGame() {
         gameBoard = new Board(rows, cols, mines);
@@ -151,13 +151,13 @@ public class Main {
     }
 
     /**
-     * Abre uma célula no tabuleiro e atua as consequências
+     * Opens a cell on the board and acts accordingly
      *
-     * @param x Linha
-     * @param y Coluna
+     * @param x Row
+     * @param y Column
      */
     private static void openCell(int x, int y) {
-        // Verifica se o jogador acertou uma mina
+        //check if player hit a mine
         if (gameBoard.hasMine(x, y)) {
             gameBoard.setLosingBoard(x, y);
             System.out.println(gameBoard);
@@ -166,13 +166,13 @@ public class Main {
             saveGame();
             return;
         }
-        // Revela a célula escolhida pelo jogador
+        //reveals the cell chosen by the player
         gameBoard.revealCell(x, y);
     }
 
     /**
-     * Salva o jogo nos ultimos ganhos (caso tenha ganhado)
-     * Aumenta o numero de jogos feitos para uso nas alcunhas de omissão
+     * Saves the game on lastWonGames (if player has won)
+     * Increments the number of games played to use on default nicknames
      */
     private static void saveGame() {
         gameRunning = false;
@@ -188,11 +188,11 @@ public class Main {
         }
 
         gameCount++;
-        showStartMenu();  // Return to the main menu
+        showStartMenu();  //return to the main menu
     }
 
     /**
-     * Escreve os ultimos jogos com as suas estaticas para a consola
+     * Writes the last won games and their respective status to the console
      */
     private static void showLastGames() {
         for (Game game : lastWonGames) {
@@ -203,11 +203,11 @@ public class Main {
     }
 
     /**
-     * Converte um caracter (A-Z) de ascii em numero, 65 = A, ao retirar 65 estamos a voltar para numeros (B = 66, 66-65 = 1 = posição 1)
-     * Se o caracter introduzido for um numero, retorna o numero
+     * Converts a character (A-Z) from ascii into a number (65 = A, so by subtracting 65 we're going back to numbers (B = 66, 66-65 = 1 = position 1))
+     * If the inserted character is a number, returns the number
      *
-     * @param character o codigo ascii para converte
-     * @return o caracter interpretado de 0-9
+     * @param character ascii code to convert
+     * @return character interpreted in 0-9
      */
     public static int asciiConvert(int character) {
         if (character >= 65)

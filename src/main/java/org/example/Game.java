@@ -1,8 +1,9 @@
 package org.example;
 
 /**
- * Usado para guardar estaticas de um jogo completado
+ * Used to store statistics of a completed game
  */
+//This class is used solely for aid, no other class depends on it to function
 public class Game {
     private GameStatus gameStatus;
     private String nickname;

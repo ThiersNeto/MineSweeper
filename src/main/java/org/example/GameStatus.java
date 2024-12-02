@@ -3,7 +3,7 @@ package org.example;
 import java.util.stream.LongStream;
 
 /**
- * Estado do jogo, utilizado
+ * Game Status
  */
 public enum GameStatus {
     Playing,

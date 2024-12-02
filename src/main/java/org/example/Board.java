@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A Classe Board representa o tabuleiro
+ * Class Board represents the board
  */
 public class Board {
     private char[][] visualGrid;
@@ -22,9 +22,9 @@ public class Board {
 
     /**
      *
-     * @param rows          Número de Linhas
-     * @param cols          Número de Colunas
-     * @param totalMines    Número de Minas
+     * @param rows          Number of Rows
+     * @param cols          Number of Columns
+     * @param totalMines    Number of Mines
      */
     public Board(int rows, int cols, int totalMines) {
         this.rows = rows;
@@ -49,7 +49,7 @@ public class Board {
     }
 
     /**
-     * Coloca minas aleatoriamente
+     * Randomly places mines
      */
     private void placeMines() {
         Random random = new Random();
@@ -69,7 +69,7 @@ public class Board {
     }
 
     /**
-     * Calcula e define o número de minas vizinhas em todas as celulas
+     * Calculates and defines the number of neighbouring mine on all cells
      */
     private void setNeighboringMineCounts() {
         for (int i = 0; i < rows; i++) {
@@ -80,11 +80,11 @@ public class Board {
     }
 
     /**
-     * Calcula a quantidade de minas vizinhas de uma célula
+     * Calculates the amount of neighbouring mines of a cell
      *
-     * @param x     Linha
-     * @param y     Coluna
-     * @return      Número de Minas
+     * @param x     Row
+     * @param y     Column
+     * @return      Number of mines
      */
     private int countNeighboringMines(int x, int y) {
         int count = 0;
@@ -103,10 +103,10 @@ public class Board {
     }
 
     /**
-     * Função recursiva que revela a céluna e as as células à volta se estas não tiverem minas ou minas vizinhas
+     * Recursive function that reveals the cell and the surrounding cells if these don't have mines or neighbouring mines
      *
-     * @param x Linha
-     * @param y Coluna
+     * @param x Row
+     * @param y Column
      */
     public void revealCell(int x, int y) {
         if ( !isCoordinateValid(x, y) || revealedGrid[x][y] || minesGrid[x][y])  //se já tiver revelado ou posição invalida, sair
@@ -127,10 +127,10 @@ public class Board {
     }
 
     /**
-     * Atualiza o visual de uma célula
+     * Updates a cell's visual
      *
-     * @param x Linha
-     * @param y Coluna
+     * @param x Row
+     * @param y Column
      */
     private void updateVisual(int x, int y){
         //orderm de operações é importante aqui
@@ -145,7 +145,7 @@ public class Board {
             return;
         }
 
-        //caso a célula esteja revelada
+        //case cell is revealed
         visualGrid[x][y] = '□';
         if(neighboringCountGrid[x][y] > 0) visualGrid[x][y] = (char) (neighboringCountGrid[x][y] + '0'); //maneira de converter char para int, o +0 serve para mudar o codigo ascii
         if(flagsGrid[x][y]) visualGrid[x][y] = '▶';
@@ -153,13 +153,13 @@ public class Board {
     }
 
     /**
-     * Muda se a célula tem bandeira ou não
-     * Diminui ou aumenta a quantidade de bandeiras
+     * Toggles the flag on a cell
+     * Increases or decreases the amount of flags
      *
-     * @param x Linha
-     * @param y Coluna
+     * @param x Row
+     * @param y Column
      *
-     * @return "true" se o utilizador consegui por/tirar uma bandeira
+     * @return "true" if user managed to set/unset a flag
      */
     public boolean toggleFlagStatus(int x, int y){
         if(!flagsGrid[x][y] && flagCount <= 0)
@@ -181,10 +181,10 @@ public class Board {
 
 
     /**
-     * Muda o tabuleiro para ser apresentado com todas as minas descobertas
+     * Changes the board to show all discovered mines
      *
-     * @param x Linha da mina selecionada
-     * @param y Coluna da mina selecionada
+     * @param x Row of the selected mine
+     * @param y Column of the selected mine
      */
     public void setLosingBoard(int x, int y){
         for (int i = 0; i < rows; i++) {
@@ -193,13 +193,13 @@ public class Board {
             }
         }
         updateBoardVisual();
-        //mudar visual da mina clicada
+        //updates the visual of the clicked mine
         visualGrid[x][y] = '◈';
     }
 
     /**
      *
-     * @return Retorna "true" se o campo dá condições de vitória
+     * @return Returns "true" if the board sets winning conditions
      */
     public boolean checkVictory() {
         boolean allMinesFlagged = true;
@@ -219,7 +219,7 @@ public class Board {
 
     /**
      *
-     * @return Uma coordenada aleatória dentro do tabuleiro que não tenha uma mina e não esteja revelado
+     * @return A random coordinate inside the board that does not have a mine and is not revealed
      */
     public Coordinate getRandomCleanCoordinate(){
         Random random = new Random();
@@ -228,26 +228,26 @@ public class Board {
         do{
             x = random.nextInt(rows);
             y = random.nextInt(cols);
-        } while(minesGrid[x][y] || revealedGrid[x][y] || !isCoordinateValid(x,y)); //repete se tiver mina, já tiver revelada ou não for valida
+        } while(minesGrid[x][y] || revealedGrid[x][y] || !isCoordinateValid(x,y)); //repeats if there is a mine, is already revealed or is not valid
 
         return new Coordinate(x,y);
     }
 
     /**
-     * Verifica se a célula tem uma mina
+     * Checks if the cell has a mine
      *
-     * @param x Linha
-     * @param y Coluna
-     * @return "true" se tiver uma mina
+     * @param x Row
+     * @param y Column
+     * @return "true" if it has a mine
      */
     public boolean hasMine(int x, int y) {
         return minesGrid[x][y];
     }
 
     /**
-     * Liga/Desliga o modo de batota
+     * Toggles cheat mode
      *
-     * @return "true" se o modo de batota for ligado
+     * @return "true" if cheat mode is turned on
      */
     public boolean toggleCheatMode(){
         cheatMode = !cheatMode;
@@ -257,18 +257,18 @@ public class Board {
     }
 
     /**
-     * Valida uma coordenada
+     * Validates a coordinate
      *
-     * @param x Linha
-     * @param y Coluna
-     * @return "true" se as coordenadas estiverem dentro da tabela
+     * @param x Row
+     * @param y Column
+     * @return "true" if the coordinates are inside the bounds
      */
     public boolean isCoordinateValid(int x, int y){
         return (x >= 0 && x < rows && y >= 0 && y < cols);
     }
 
     /**
-     * Percorre todas as células e atualiza o seu visual (caracter)
+     * Runs through every cell and updates their visual (character)
      */
     private void updateBoardVisual(){
         for (int i = 0; i < rows; i++) {
@@ -279,22 +279,22 @@ public class Board {
     }
 
     /**
-     * Constroi uma string do tabuleiro, com estatisticas
-     * Aproveita o uso de ascii para tornar um número numa letra, o A em ascii é o código 65, os seguintes seguem ordem alfabetica (B = 66, C = 67)
+     * Build a string of the board, with statistics
+     * Takes advantage of Ascii to turn a number into a character, A is 65 in ascii, the following follow in alphabetic order (B = 66, C = 67)
      *
-     * @return O Tabuleiro
+     * @return The Board
      */
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("♥⠀ ");
-        //Imprimir colunas
+        //print columns
         for (int i = 0; i < cols; i++) {
             stringBuilder.append((i)).append("  ");
         }
         stringBuilder.append('\n');
         for (int i = 0; i < rows; i++) {
-            stringBuilder.append((char) ('A' + i)).append("  "); //imprimir linhas // truque ascii explicado no javadoc
+            stringBuilder.append((char) ('A' + i)).append("  "); //print rows // ascii trick explained in javadoc
             for (int j = 0; j < cols; j++) {
                 stringBuilder.append(visualGrid[i][j]).append("  ");
             }
