@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
  * Class Board represents the board
  */
 public class Board {
+    private char[][] board;
     private char[][] visualGrid;
     private int[][] neighboringCountGrid;
     private boolean[][] minesGrid;
@@ -27,6 +28,10 @@ public class Board {
      * @param totalMines    Number of Mines
      */
     public Board(int rows, int cols, int totalMines) {
+        //THIERS, AQUI É PRECISO ALTERAR ALGUMA LOGICA, DESCULPA NAO TIVE TEMPO
+        //basicamente inicializa apenas a variavel board (literalmente board com b minusculo)
+        //todas as outras ja nao sao necessarias pq essas informações agora vão estar inseridas em cada Cell
+        //informações como se tem mina, se ta flagged etc
         this.rows = rows;
         this.cols = cols;
         this.totalMines = totalMines;

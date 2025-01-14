@@ -7,7 +7,7 @@ import java.util.Scanner;
  */
 public class Main {
 
-    static int rows = 9, cols = 9, mines = 10;
+    //static int rows = 9, cols = 9, mines = 10;
     static int lastGameAmount = 10;
     static Board gameBoard;
     static int gameCount = 1;
@@ -41,7 +41,8 @@ public class Main {
             switch (choice) {
                 case 1:
                     // Início do jogo
-                    startGame();
+                    //startGame();
+                    chooseDifficulty();
                     break;
                 case 2:
                     showLastGames();
@@ -56,6 +57,31 @@ public class Main {
                     break;
             }
         }
+    }
+
+    public static void chooseDifficulty(){
+        int choice = 0;
+        do{
+            System.out.print("\n=== Escolha a dificuldade ===");
+            for(int i = 1; i <= Difficulty.values().length; i++){
+                System.out.printf("\n%d.%s", i, Difficulty.valueOfInt(i).toString());
+            }
+            System.out.print("\nEscolha uma opção: ");
+            choice = scanner.nextInt();
+            //basicamente caso seja dificuldade 1 2 ou 3 ele entra e envia os settings da diff correspondente
+            switch (choice) {
+                case 1:
+                case 2:
+                case 3:
+                    Settings settings = Difficulty.valueOfInt(choice).getSettings();
+                    startGame(settings.rows(), settings.cols(), settings.mines());
+                    break;
+                default:
+                    System.out.println("Valor inserido é inválido");
+                    choice = 0;
+                    break;
+            }
+        }while (choice < 1);
     }
 
     /**
@@ -132,10 +158,12 @@ public class Main {
         } while (gameRunning);
     }
 
+
+
     /**
      * Asks for a nickname and begins the game.
      */
-    public static void startGame() {
+    public static void startGame(int rows, int cols, int mines) {
         gameBoard = new Board(rows, cols, mines);
 
         System.out.print("Insira a alcunha: ");
