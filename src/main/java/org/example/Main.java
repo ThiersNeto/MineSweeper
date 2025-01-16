@@ -68,18 +68,15 @@ public class Main {
             }
             System.out.print("\nEscolha uma opção: ");
             choice = scanner.nextInt();
-            //basicamente caso seja dificuldade 1 2 ou 3 ele entra e envia os settings da diff correspondente
-            switch (choice) {
-                case 1:
-                case 2:
-                case 3:
-                    Settings settings = Difficulty.valueOfInt(choice).getSettings();
-                    startGame(settings.rows(), settings.cols(), settings.mines());
-                    break;
-                default:
-                    System.out.println("Valor inserido é inválido");
-                    choice = 0;
-                    break;
+            //if inserted value is a difficulty, its settings are sent over to startGame
+            if(Difficulty.exists(choice))
+            {
+                startGame(Difficulty.valueOfInt(choice).getSettings());
+            }
+            else
+            {
+                choice = 0; //invalid choice (no such difficulty exists)
+                System.out.println("Valor inserido é inválido");
             }
         }while (choice < 1);
     }
@@ -163,8 +160,9 @@ public class Main {
     /**
      * Asks for a nickname and begins the game.
      */
-    public static void startGame(int rows, int cols, int mines) {
-        gameBoard = new Board(rows, cols, mines);
+    public static void startGame(Settings settings) {
+        System.out.println("GAME START GOT: " + settings);
+        gameBoard = new Board(settings.rows(), settings.cols(), settings.mines());
 
         System.out.print("Insira a alcunha: ");
         nickname = scanner.nextLine();  // Use the global scanner

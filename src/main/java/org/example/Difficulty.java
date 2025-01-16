@@ -29,6 +29,12 @@ public enum Difficulty {
         return (Difficulty) map.get(difficulty);
     }
 
+    //checks if a difficulty exists and returns true or false
+    public static boolean exists(int value)
+    {
+        return map.containsKey(value);
+    }
+
     public int getValue(){
         return value;
     }
