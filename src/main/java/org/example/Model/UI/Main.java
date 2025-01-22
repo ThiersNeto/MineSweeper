@@ -3,6 +3,8 @@ package org.example.Model.UI;
 import org.example.Model.Game.*;
 import org.example.Model.Model.Settings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -19,11 +21,12 @@ public class Main {
     static Game[] lastWonGames;
     static String nickname;
     static boolean gameRunning = false;
-    static Scanner scanner = new Scanner(System.in);  // Global Scanner
+    static List<Long> bestTimes = new ArrayList<>(3);
+    static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        // Menu inicial
         lastWonGames = new Game[lastGameAmount];
+        simulateTestWins();
         showStartMenu();
     }
 
@@ -35,8 +38,9 @@ public class Main {
         while (true) {
             System.out.println("=== MENU ===");
             System.out.println("1. Começar Jogo");
-            System.out.println("2. Mostrar últimos " + lastWonGames.length + " jogos ganhos");
-            System.out.println("3. Sair");
+            System.out.println("2. Mostrar 3 melhores vitórias");
+            System.out.println("3. Mostrar últimos " + lastWonGames.length + " jogos ganhos");;
+            System.out.println("4. Sair");
             System.out.print("Escolha uma opção: ");
             choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline
@@ -44,22 +48,38 @@ public class Main {
             switch (choice) {
                 case 1:
                     // Início do jogo
-                    //startGame();
                     chooseDifficulty();
                     break;
                 case 2:
-                    showLastGames();
+                    showBestTimes();
                     break;
                 case 3:
+                    showLastGames();
+                    break;
+                case 4:
                     System.out.println("Obrigado por jogar Campo Minado!");
-                    //scanner.close();
-                    System.exit(0); //exit the program
+                    System.exit(0); // Exit the program
                     return;
+
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
                     break;
             }
         }
+    }
+
+    // Função para simular 3 vitórias
+    private static void simulateTestWins() {
+        bestTimes.add(45L);  // Vitória 1 com tempo de 45 segundos
+        bestTimes.add(30L);  // Vitória 2 com tempo de 30 segundos
+        bestTimes.add(25L);  // Vitória 3 com tempo de 25 segundos
+
+        // Salva essas vitórias no array de jogos
+        lastWonGames[0] = new Game(GameStatus.Won, "Gabriel", "Board 1");
+        lastWonGames[1] = new Game(GameStatus.Won, "Saymon", "Board 2");
+        lastWonGames[2] = new Game(GameStatus.Won, "Vemba", "Board 3");
+
+        wonGameCount = 3;
     }
 
     public static void chooseDifficulty(){
@@ -83,6 +103,21 @@ public class Main {
             }
         }while (choice < 1);
     }
+
+    /**
+     * Exibe as 3 melhores vitórias do jogador, com seus tempos.
+     */
+    static void showBestTimes() {
+        System.out.println("=== MELHORES 3 VITÓRIAS ===");
+        if (bestTimes.isEmpty()) {
+            System.out.println("Ainda não há vitórias registradas.");
+        } else {
+            for (int i = 0; i < bestTimes.size(); i++) {
+                System.out.println("Vitória " + (i + 1) + ": " + bestTimes.get(i) + " segundos");
+            }
+        }
+    }
+
 
     /**
      * Reads, interprets and executes commands
@@ -158,26 +193,48 @@ public class Main {
         } while (gameRunning);
     }
 
-
-
     /**
-     * Asks for a nickname and begins the game.
+     * Inicia o jogo solicitando o nome do jogador, configurando o tabuleiro e iniciando o loop de comandos.
+     *
+     * A função solicita que o jogador insira um nome (alcunha). Se o jogador não fornecer um nome,
+     * será atribuído um nome genérico, como "Anonymous #". Em seguida, a função exibe uma mensagem de
+     * boas-vindas dependendo se o jogador inseriu um nome novo ou repetido. O estado inicial do jogo é
+     * configurado, o tabuleiro é mostrado, e o loop de interação com o jogador é iniciado.
+     *
+     * @param settings Configurações do jogo que definem o número de linhas, colunas e minas no tabuleiro.
      */
     public static void startGame(Settings settings) {
-        System.out.println("GAME START GOT: " + settings);
         gameBoard = new Board(settings.rows(), settings.cols(), settings.mines());
 
+        if (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
+
         System.out.print("Insira a alcunha: ");
-        nickname = scanner.nextLine();  // Use the global scanner
-        if (nickname.isEmpty()) nickname = "Anonymous " + gameCount;
-        System.out.println();
+        nickname = scanner.nextLine().trim();
 
+        if (nickname.isEmpty()) {
+            // Se o nome for vazio, atribui "Anonymous #" ao jogador
+            nickname = "Anonymous " + gameCount;
+            gameCount++; // Incrementa o número para o próximo nome anônimo
+        }
+
+        // Verifica se o nome foi inserido pela primeira vez
+        if (nickname.equals(nickname)) {
+            // Se for o mesmo nome do jogador anterior
+            System.out.println("Bem-vindo novamente, " + nickname + "!");
+        } else {
+            // Se for um novo nome, apenas imprime a mensagem de boas-vindas
+            System.out.println("Bem-vindo, " + nickname + "!");
+        }
+
+        nickname = nickname;
         currentGameStatus = GameStatus.Playing;
-
         System.out.println(gameBoard);
         gameRunning = true;
         interpretCommands();
     }
+
 
     /**
      * Opens a cell on the board and acts accordingly

@@ -8,12 +8,14 @@ public class Game {
     private GameStatus gameStatus;
     private String nickname;
     private String board;
+    private long time;          // Tempo sem Segundos
 
 
     public Game(GameStatus gameStatus, String nickname, String board) {
         this.gameStatus = gameStatus;
         this.nickname = nickname;
         this.board = board;
+        this.time = time;
     }
 
     @Override
