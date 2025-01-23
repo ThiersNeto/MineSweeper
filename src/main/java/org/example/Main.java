@@ -1,12 +1,15 @@
 package org.example;
 
-import java.util.Scanner;
+//import java.util.Scanner;
+//import java.util.List;
+//import java.util.ArrayList;
+import java.util.*; //imports everything I could ever need :)
 
 /**
  * Main Class
  */
 public class Main {
-
+    //main is the equivalent of GameManager in Unity!!!
     //static int rows = 9, cols = 9, mines = 10;
     static int lastGameAmount = 10;
     static Board gameBoard;
@@ -14,12 +17,22 @@ public class Main {
     static int wonGameCount;
     static GameStatus currentGameStatus;
     static Game[] lastWonGames;
-    static String nickname;
+    //static String nickname;
+
     static boolean gameRunning = false;
     static Scanner scanner = new Scanner(System.in);  // Global Scanner
 
+
+    //V2 addons here
+    static List<Player> players;
+    static int currentPlayer; //lets us know the index of the currentPlayer for easier access on the list
+    static Map<Player, List<Game>> gameHistory; //stores games won by a player
+
+
     public static void main(String[] args) {
         // Menu inicial
+        players = new ArrayList<>();
+        gameHistory = new HashMap<>();
         lastWonGames = new Game[lastGameAmount];
         showStartMenu();
     }
@@ -42,7 +55,7 @@ public class Main {
                 case 1:
                     // Início do jogo
                     //startGame();
-                    chooseDifficulty();
+                    chooseNickname();
                     break;
                 case 2:
                     showLastGames();
@@ -75,8 +88,8 @@ public class Main {
             }
             else
             {
+                System.out.println(choice + " não corresponde a nenhuma dificuldade. Por favor tente novamente.");
                 choice = 0; //invalid choice (no such difficulty exists)
-                System.out.println("Valor inserido é inválido");
             }
         }while (choice < 1);
     }
@@ -115,6 +128,11 @@ public class Main {
                     System.out.println("/flag <linha> <coluna> : Marca a célula nas coordenadas de tabuleiro linha/coluna com uma bandeira. Se já existir uma bandeira nessa célula, remove-a.");
                     System.out.println("/hint : Sugere de forma aleatória, uma célula que não contém minas.");
                     System.out.println("/cheat : Comuta o jogo para modo de “batota”, onde as minas são reveladas a cada mostragem do tabuleiro.");
+                    System.out.println("/wins : Mostra ao utilizador um histórico de vitórias de todos os utilizadores (ordenados pela alcunha).");
+                    System.out.println("/top : Mostra ao utilizador os melhores 3 tempos, junto da alcunha do respetivo jogador.");
+                    System.out.println("/history : Mostra ao utilizador todos os comandos utilizados na consola durante o jogo atual.");
+                    System.out.println("/inventory : Mostra ao utilizador o conteúdo do seu inventário de PowerUps.");
+                    System.out.println("/use <powerUp> <argumento> : Utiliza um PowerUp. Pode ser utilizado sem argumento (e.g.: /use shield) ou com argumento (e.g /use column C).\nSó é possível utilizar um PowerUp se este estiver no inventário do jogador.");
                     System.out.println("/quit : Termina o jogo e volta para o menu principal. Um jogo assim terminado não entra na lista de vitórias.");
                     break;
                 case ("open"):
@@ -131,6 +149,26 @@ public class Main {
                 case ("cheat"):
                     toggled = gameBoard.toggleCheatMode();
                     System.out.println("Batota " + (toggled ? "ativada" : "desativada"));
+                    break;
+                case ("wins"):
+                    for(Player p : players)
+                    {
+                        //the toString of class game will print it all for me :)
+                        System.out.println(gameHistory.get(p));
+                        //if this no worki as intended then just \n that
+                    }
+                    break;
+                case ("top"):
+                    System.out.println("it never skibidis but it ohios");
+                    break;
+                case ("history"):
+                    System.out.println("Should I just skibidi?");
+                    break;
+                case ("inventory"):
+                    System.out.println("we're just a bunch of rizzlers");
+                    break;
+                case ("use"):
+                    System.out.println("Erm, what the sigma?");
                     break;
                 case ("quit"):
                     System.out.print("Tem a certeza (y/n): ");
@@ -161,19 +199,39 @@ public class Main {
      * Asks for a nickname and begins the game.
      */
     public static void startGame(Settings settings) {
-        System.out.println("GAME START GOT: " + settings);
+        //System.out.println("GAME START GOT: " + settings);
+        System.out.println();
+        //if there is the need to get player i can do a current with the index of the list!!!
         gameBoard = new Board(settings.rows(), settings.cols(), settings.mines());
+        currentGameStatus = GameStatus.Playing;
+        //get time from board (needs to be saved on player history)
+        //maybe a map where the key is the key and tha game is the value for top 3 fastest
+        //ACTUALLY THO, UM MAPA (KEY = PLAYER; VALUE = LIST<GAMES> POGGIWOGGI
+        System.out.println(gameBoard);
+        gameRunning = true;
+        scanner.nextLine();
+        interpretCommands();
+    }
 
+    public static void chooseNickname(){
+        String nickname;
         System.out.print("Insira a alcunha: ");
         nickname = scanner.nextLine();  // Use the global scanner
         if (nickname.isEmpty()) nickname = "Anonymous " + gameCount;
-        System.out.println();
-
-        currentGameStatus = GameStatus.Playing;
-
-        System.out.println(gameBoard);
-        gameRunning = true;
-        interpretCommands();
+        Player player = new Player(nickname);
+        if(players.contains(player)){
+            currentPlayer = players.indexOf(player);
+            System.out.println("Bem vindo de volta " + nickname + "!");
+        }
+        else{
+            players.add(player);
+            currentPlayer = players.indexOf(player);
+            //sorts by alphabetical order (bc it's required for wins to be ordered by nickname)
+            players.sort(Comparator.comparing(Player::getNickname));
+            //registers the player on the games history and initializes his own history
+            gameHistory.put(player, new ArrayList<>());
+        }
+        chooseDifficulty();
     }
 
     /**
@@ -206,7 +264,7 @@ public class Main {
             case Won:
                 System.out.println(gameBoard);
                 System.out.println("Parabéns, você venceu!");
-                lastWonGames[(wonGameCount) % lastWonGames.length] = new Game(currentGameStatus, nickname, gameBoard.toString());
+                lastWonGames[(wonGameCount) % lastWonGames.length] = new Game(currentGameStatus, players.get(currentPlayer).getNickname(), gameBoard.toString());
                 wonGameCount++;
                 break;
             case Lost:

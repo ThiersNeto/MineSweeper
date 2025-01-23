@@ -4,8 +4,8 @@ import java.util.*;
 
 public enum Difficulty {
     Starter(1, new Settings(9,9,10)),
-    Pro(2, new Settings(10,10,12)),
-    Guru(3, new Settings(12,12,20));
+    Pro(2, new Settings(10,10,16)),
+    Guru(3, new Settings(12,12,24));
 
     private int value;
     private Settings settings;
