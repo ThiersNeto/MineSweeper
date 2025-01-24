@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Represents a player that plays the game.
+ * <br>
+ * A player is characterized by his nickname and has an associated inventory
+ */
 public class Player {
     private String nickname;
     private Inventory inventory;

@@ -159,7 +159,7 @@ public class Main {
                     System.out.println("/help : Apresenta a lista de comandos, a sua função e utilização.");
                     System.out.println("/open <linha> <coluna> : Abre a célula nas coordenadas de tabuleiro - linha/coluna, e.g., /open A 2.");
                     System.out.println("/flag <linha> <coluna> : Marca a célula nas coordenadas de tabuleiro linha/coluna com uma bandeira. Se já existir uma bandeira nessa célula, remove-a.");
-                    System.out.println("/cheat : Comuta o jogo para modo de “batota”, onde as minas são reveladas a cada mostragem do tabuleiro.");
+                    System.out.println("/cheat : Comuta o jogo para modo de batota, onde as minas são reveladas a cada mostragem do tabuleiro.");
                     System.out.println("/wins : Mostra ao utilizador um histórico de vitórias de todos os utilizadores (ordenados pela alcunha).");
                     System.out.println("/top : Mostra ao utilizador os melhores 3 tempos, junto da alcunha do respetivo jogador.");
                     System.out.println("/history : Mostra ao utilizador todos os comandos utilizados na consola durante o jogo atual.");
@@ -342,7 +342,7 @@ public class Main {
      * <h3>Display Format:</h3>
      *
      * <pre>
-     * === INVENTÁRIO ===
+     * === INVENTARIO ===
      * 1. SHIELD
      * 2. ICE
      * </pre>
@@ -356,7 +356,7 @@ public class Main {
             return;
         }
 
-        System.out.println("=== INVENTÁRIO ===");
+        System.out.println("=== INVENTARIO ===");
         for (int i = 0; i < powerUps.size(); i++) {
             PowerUp powerUp = powerUps.get(i);
             System.out.printf("%d. %s )\n",

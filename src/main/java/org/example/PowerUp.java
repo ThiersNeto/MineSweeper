@@ -122,7 +122,7 @@ public class PowerUp {
      *
      * @return Formatted name of the PowerUp type suitable for display
      *
-     * @implNote This override provides localized/capitalized names compared to
+     * <br><br> This override provides localized/capitalized names compared to
      *           the default enum naming convention
      */
     @Override

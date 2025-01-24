@@ -1,5 +1,9 @@
 package org.example;
 
+/**
+ * Represents a Cell contained in a board
+ * <br>Stores information on the Cells current state
+ */
 public class Cell {
     private boolean mine;
     private boolean flagged;
