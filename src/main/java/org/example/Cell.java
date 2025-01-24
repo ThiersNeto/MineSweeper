@@ -6,6 +6,7 @@ public class Cell {
     private boolean revealed;
     private int neighbouringMines;
     private char visual;
+    private PowerUpType powerUp;
 
     public Cell(){
         //on creation values will all be as follows:
@@ -45,6 +46,10 @@ public class Cell {
         return flagged;
     }
 
+    public boolean hasPowerUp() {
+        return powerUp != null;
+    }
+
     public int getNeighbouringMines(){
         return this.neighbouringMines;
     }
@@ -60,4 +65,13 @@ public class Cell {
     public char getChar(){
         return this.visual;
     }
+
+    public PowerUpType getPowerUp() {
+        return powerUp;
+    }
+
+    public void setPowerUp(PowerUpType powerUp) {
+        this.powerUp = powerUp;
+    }
+
 }
