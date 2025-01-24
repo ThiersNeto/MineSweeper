@@ -208,7 +208,7 @@ public class Main {
                     if (powerUps.get(powerUpChoice) != null)
                     {
                         powerUp = powerUps.get(powerUpChoice);
-                        powerUps.remove(powerUpChoice);
+                        players.get(currentPlayer).getInventory().removePowerUp(powerUpChoice);
                     }
                     else{
                         System.out.println("Escolha inválida");
@@ -260,8 +260,8 @@ public class Main {
                         scanner.nextLine();
 
                         int row = asciiConvert(rowChar);
-                        int colIndex = asciiConvert(col);
-                        coord = new Coordinate(row, colIndex);
+                        //int colIndex = col;
+                        coord = new Coordinate(row, col);
                     }
 
                     boolean activated = powerUp.activate(gameBoard, coord);

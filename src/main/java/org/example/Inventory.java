@@ -15,6 +15,11 @@ public class Inventory {
         powerUps.add(powerUp);
     }
 
+    public void removePowerUp(int index)
+    {
+        powerUps.remove(index);
+    }
+
     public boolean hasPowerUp(PowerUpType type) {
         return powerUps.stream().anyMatch(p -> p.getType() == type);
     }
