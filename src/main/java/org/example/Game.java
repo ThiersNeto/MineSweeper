@@ -20,6 +20,10 @@ public class Game {
         this.time = time;
     }
 
+    public long getGameTime(){
+        return this.time;
+    }
+
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

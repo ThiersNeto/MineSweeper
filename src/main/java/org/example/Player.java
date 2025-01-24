@@ -51,7 +51,7 @@ public class Player {
         for (int i = 0; i < 3; i++) {
             // Escolhe um tipo de PowerUp aleatório
             PowerUpType randomType = powerUpTypes[random.nextInt(powerUpTypes.length)];
-            PowerUp powerUp = new PowerUp(randomType, 1); // Cada PowerUp tem 1 uso
+            PowerUp powerUp = new PowerUp(randomType);
             inventory.addPowerUp(powerUp); // Adiciona ao inventário
         }
     }

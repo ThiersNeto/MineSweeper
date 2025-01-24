@@ -24,6 +24,7 @@ public class Board {
     private List<String> commandsHistory;
     private long iceStart;
     private boolean iceActive;
+    private int shieldedPlays;
 
     /**
      *
@@ -39,6 +40,7 @@ public class Board {
         //on the beginning ice will never be able to start as activated right away
         this.iceStart = 0;
         this.iceActive = false;
+        this.shieldedPlays = 0;
 
         flagCount = totalMines;
         startingTime = System.currentTimeMillis();
@@ -52,6 +54,7 @@ public class Board {
             }
         }
         placeMines();
+        placePowerUp();
     }
 
     /**
@@ -178,21 +181,35 @@ public class Board {
         }
 
         if(!board[x][y].isFlagged())
-            flagCount--;
+        {
+            //only if it's not locked can it be unflagged
+            if(!board[x][y].isCellLocked())
+            {
+                flagCount --;
+            }
+            else{
+                System.out.println("A célula está bloqueada! Você não pode remover esta bandeira");
+            }
+        }
         else
             flagCount++;
 
-        board[x][y].toggleFlag();
+        if(!board[x][y].isCellLocked()) board[x][y].toggleFlag();
 
         updateVisual(x,y);
 
         return true;
     }
 
-    /*public void freezeTime(int turns) {
-        this.frozenTurns = turns;
-        System.out.println("Tempo congelado por " + turns + " jogadas.");
-    }/*
+    public boolean checkForPowerUp(int x, int y)
+    {
+        return board[x][y].hasPowerUp();
+    }
+
+    public PowerUp getPowerUp(int x, int y)
+    {
+        return new PowerUp(board[x][y].getPowerUp());
+    }
 
 
     /**
@@ -301,9 +318,9 @@ public class Board {
                 PowerUpType.SHIELD,
                 PowerUpType.ICE,
                 PowerUpType.LINE,
-                PowerUpType.COLUMN
+                PowerUpType.COLUMN,
+                PowerUpType.HINT
         );
-
         for (PowerUpType powerUpType : powerUpTypes) {
             boolean placed = false;
             while (!placed) {
@@ -314,6 +331,7 @@ public class Board {
                 if (!cell.hasMine() && !cell.hasPowerUp()) {
                     cell.setPowerUp(powerUpType);
                     placed = true;
+                    System.out.println("Inserido powerup " + powerUpType + " em " + x + ", " + y);
                 }
             }
         }
@@ -348,14 +366,58 @@ public class Board {
     public void activateIce(int turns)
     {
         frozenTurns += turns;
-        iceStart = System.currentTimeMillis();
-        iceActive = true;
+        //only if ice wasn't previously active will it freeze the time and become active
+        //otherwise it will only increment the turns
+        if(!iceActive)
+        {
+            iceStart = System.currentTimeMillis();
+            iceActive = true;
+        }
     }
 
     public void deactivateIce() {
         iceActive = false;
         startingTime = startingTime + (System.currentTimeMillis() - iceStart);
         iceStart = 0L;
+    }
+
+    public int getFrozenTurns()
+    {
+        return this.frozenTurns;
+    }
+
+    public void passFrozenTurn()
+    {
+        frozenTurns --;
+    }
+
+    public boolean isIceActive()
+    {
+        return this.iceActive;
+    }
+
+    public void activateShield()
+    {
+        this.shieldedPlays ++;
+    }
+
+    public int getShieldedPlays()
+    {
+        return this.shieldedPlays;
+    }
+
+    public void shieldPlayer(int x, int y)
+    {
+        board[x][y].toggleFlag();
+        board[x][y].lockCell();
+        flagCount --;
+        shieldedPlays --;
+        updateVisual(x,y);
+    }
+
+    public boolean isCellLocked(int x, int y)
+    {
+        return board[x][y].isCellLocked();
     }
 
     public int getRows() {

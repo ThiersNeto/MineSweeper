@@ -7,6 +7,7 @@ public class Cell {
     private int neighbouringMines;
     private char visual;
     private PowerUpType powerUp;
+    private boolean lockedCell;
 
     public Cell(){
         //on creation values will all be as follows:
@@ -15,6 +16,17 @@ public class Cell {
         this.revealed = false;
         this.neighbouringMines = 0;
         this.visual = '\u25A0';
+        this.lockedCell = false;
+    }
+
+    public void lockCell()
+    {
+        this.lockedCell = true;
+    }
+
+    public boolean isCellLocked()
+    {
+        return this.lockedCell;
     }
 
     public boolean hasMine()

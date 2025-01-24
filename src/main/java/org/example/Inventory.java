@@ -28,6 +28,11 @@ public class Inventory {
         return powerUps.stream().filter(p -> p.getType() == type).findFirst().orElse(null);
     }
 
+    public void cleanInventory()
+    {
+        powerUps.clear();
+    }
+
     public List<PowerUp> getPowerUps() {
         return powerUps;
     }

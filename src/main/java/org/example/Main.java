@@ -30,13 +30,15 @@ public class Main {
     static List<Player> players;
     static int currentPlayer; //lets us know the index of the currentPlayer for easier access on the list
     static Map<Player, List<Game>> gameHistory; //stores games won by a player
+    static List<Game> bestGames;
 
 
     public static void main(String[] args) {
         // Menu inicial
         players = new ArrayList<>();
         gameHistory = new HashMap<>();
-        lastWonGames = new Game[lastGameAmount];
+        //lastWonGames = new Game[lastGameAmount];
+        bestGames = new ArrayList<>();
         showStartMenu();
     }
 
@@ -48,7 +50,7 @@ public class Main {
         while (true) {
             System.out.println("=== MENU ===");
             System.out.println("1. Começar Jogo");
-            System.out.println("2. Mostrar últimos " + lastWonGames.length + " jogos ganhos");
+            System.out.println("2. Mostrar top 3 jogos");
             System.out.println("3. Sair");
             System.out.print("Escolha uma opção: ");
             choice = scanner.nextInt();
@@ -61,7 +63,8 @@ public class Main {
                     chooseNickname();
                     break;
                 case 2:
-                    showLastGames();
+                    //ALSO HERE showLastGames();
+                    showBestGames();
                     break;
                 case 3:
                     System.out.println("Obrigado por jogar Campo Minado!");
@@ -151,25 +154,29 @@ public class Main {
                     System.out.println("/help : Apresenta a lista de comandos, a sua função e utilização.");
                     System.out.println("/open <linha> <coluna> : Abre a célula nas coordenadas de tabuleiro - linha/coluna, e.g., /open A 2.");
                     System.out.println("/flag <linha> <coluna> : Marca a célula nas coordenadas de tabuleiro linha/coluna com uma bandeira. Se já existir uma bandeira nessa célula, remove-a.");
-                    System.out.println("/hint : Sugere de forma aleatória, uma célula que não contém minas.");
                     System.out.println("/cheat : Comuta o jogo para modo de “batota”, onde as minas são reveladas a cada mostragem do tabuleiro.");
                     System.out.println("/wins : Mostra ao utilizador um histórico de vitórias de todos os utilizadores (ordenados pela alcunha).");
                     System.out.println("/top : Mostra ao utilizador os melhores 3 tempos, junto da alcunha do respetivo jogador.");
                     System.out.println("/history : Mostra ao utilizador todos os comandos utilizados na consola durante o jogo atual.");
                     System.out.println("/inventory : Mostra ao utilizador o conteúdo do seu inventário de PowerUps.");
-                    System.out.println("/use <powerUp> <argumento> : Utiliza um PowerUp. Pode ser utilizado sem argumento (e.g.: /use shield) ou com argumento (e.g /use column C).\nSó é possível utilizar um PowerUp se este estiver no inventário do jogador.");
+                    System.out.println("/use : Utiliza um PowerUp. Pode ser utilizado sem argumento \nSó é possível utilizar um PowerUp se este estiver no inventário do jogador.");
                     System.out.println("/quit : Termina o jogo e volta para o menu principal. Um jogo assim terminado não entra na lista de vitórias.");
                     break;
                 case ("open"):
+                    if(gameBoard.isIceActive())
+                    {
+                        gameBoard.passFrozenTurn();
+                        if(gameBoard.getFrozenTurns() < 1){
+                            System.out.println("Acabaram as rondas congeladas!");
+                            gameBoard.deactivateIce();
+                        }
+                        else System.out.println(gameBoard.getFrozenTurns() + " rondas congeladas restantes");
+                    }
                     openCell(x, y);
                     break;
                 case ("flag"):
                     toggled = gameBoard.toggleFlagStatus(x, y);
                     System.out.println("Bandeira " + (toggled ? "colocada" : "removida"));
-                    break;
-                case ("hint"):
-                    Coordinate cleanCoord = gameBoard.getRandomCleanCoordinate();
-                    System.out.println("A célula " + cleanCoord + " não tem mina");
                     break;
                 case ("cheat"):
                     toggled = gameBoard.toggleCheatMode();
@@ -184,19 +191,24 @@ public class Main {
                     }
                     break;
                 case ("top"):
-                    System.out.println("it never skibidis but it ohios");
+                    showBestGames();
                     break;
                 case ("history"):
                     gameBoard.showCommandHistory();
                     break;
                 case ("inventory"):
                     showPlayerInventory();
-                    System.out.println("we're just a bunch of rizzlers");
                     break;
                 case ("use"):
                     List<PowerUp> powerUps = new ArrayList<>(players.get(currentPlayer).getInventory().getPowerUps());
-                    String s = powerUps.size() > 0 ? "Powerups disponíveis: \n" : "Não tem powerups!";
-                    System.out.println(s);
+                    if(powerUps.size() > 0)
+                    {
+                        System.out.println("Powerups disponíveis: \n");
+                    }
+                    else{
+                        System.out.println("Não tem powerups disponíveis!");
+                        continue;
+                    }
                     for(int i = 0; i < powerUps.size(); i++)
                     {
                         System.out.println((i + 1) + ". " + powerUps.get(i));
@@ -214,44 +226,17 @@ public class Main {
                         System.out.println("Escolha inválida");
                         continue;
                     }
-                    /*if(powerUpChoice < 1 || powerUpChoice > 4) {
-                        System.out.println("Escolha inválida");
-                        break;
-                    }*/
-
-                    /*PowerUpType powerUpType = powerUpType = null;
-                    switch (powerUpChoice) {
-                        case 1:
-                            powerUpType = PowerUpType.SHIELD;
-                            break;
-                        case 2:
-                            powerUpType = PowerUpType.ICE;
-                            //gameBoard.activateIce();
-                            break;
-                        case 3:
-                            powerUpType = PowerUpType.LINE;
-                            break;
-                        case 4:
-                            powerUpType = PowerUpType.COLUMN;
-                            break;
-                        default:
-                            System.out.println("Escolha inválida. Operação cancelada.");
-                            break;
-                    }
-
-                    if (powerUpType == null) {
-                        return;
-                    }*/
-
-                    //PowerUp powerUp = players.get(currentPlayer).getPowerUp(powerUpType);
-
-                    /*if (powerUp == null) {
-                        System.out.println("Você não tem um " + powerUpType + " no inventário.");
-                        break;
-                    }*/
 
                     PowerUpType powerUpType = powerUp.getType();
                     Coordinate coord = null;
+
+                    if(powerUpType == PowerUpType.HINT)
+                    {
+                        Coordinate cleanCoord = gameBoard.getRandomCleanCoordinate();
+                        System.out.println("A célula " + cleanCoord + " não tem mina");
+                        continue; //because there is no need to activate anything
+                    }
+
                     if (powerUpType == PowerUpType.LINE || powerUpType == PowerUpType.COLUMN) {
                         System.out.print("Digite a linha (A, B, C, ...): ");
                         char rowChar = scanner.next().toUpperCase().charAt(0);
@@ -263,7 +248,6 @@ public class Main {
                         //int colIndex = col;
                         coord = new Coordinate(row, col);
                     }
-
                     boolean activated = powerUp.activate(gameBoard, coord);
                     if (activated) {
                         System.out.println(powerUpType + " ativado com sucesso!");
@@ -276,6 +260,8 @@ public class Main {
                     char choice = scanner.next().toUpperCase().charAt(0);
                     scanner.nextLine(); // Consume the newline
                     if (choice == 'Y') {
+                        //player only gets to keep the powerups if he wins
+                        players.get(currentPlayer).getInventory().cleanInventory();
                         return;  // Exit to the menu
                     }
                     break;
@@ -312,9 +298,6 @@ public class Main {
         Player player = players.get(currentPlayer);
         player.assignRandomPowerUps();
 
-        //get time from board (needs to be saved on player history)
-        //maybe a map where the key is the key and tha game is the value for top 3 fastest
-        //ACTUALLY THO, UM MAPA (KEY = PLAYER; VALUE = LIST<GAMES> POGGIWOGGI
         System.out.println(gameBoard);
         gameRunning = true;
         scanner.nextLine();
@@ -354,10 +337,9 @@ public class Main {
         System.out.println("=== INVENTÁRIO ===");
         for (int i = 0; i < powerUps.size(); i++) {
             PowerUp powerUp = powerUps.get(i);
-            System.out.printf("%d. %s (Usos restantes: %d)\n",
+            System.out.printf("%d. %s )\n",
                     i + 1,
-                    powerUp.getType(),
-                    powerUp.getUsesRemaining()
+                    powerUp.getType()
             );
         }
     }
@@ -374,13 +356,23 @@ public class Main {
         if(!gameBoard.isFlagged(x, y))
         {
             if (gameBoard.hasMine(x, y)) {
-                gameBoard.setLosingBoard(x, y);
-                System.out.println(gameBoard);
-                System.out.println("Você acertou uma mina! Fim de jogo.");
-                currentGameStatus = GameStatus.Lost;
-                saveGame();
-                return;
+                if(gameBoard.getShieldedPlays() > 0)
+                {
+                    gameBoard.shieldPlayer(x, y);
+                    System.out.println("A célula " + x + " " + y + " tinha uma mina!\nO shield salvou da explosão! Shields ativos restantes: " + gameBoard.getShieldedPlays());
+                }
+                else{
+                    gameBoard.setLosingBoard(x, y);
+                    System.out.println(gameBoard);
+                    System.out.println("Você acertou uma mina! Fim de jogo.");
+                    //player only keeps inventory if he wins
+                    players.get(currentPlayer).getInventory().cleanInventory();
+                    currentGameStatus = GameStatus.Lost;
+                    saveGame();
+                    return;
+                }
             }
+            if(gameBoard.checkForPowerUp(x, y)) players.get(currentPlayer).getInventory().addPowerUp(gameBoard.getPowerUp(x, y));
             //reveals the cell chosen by the player
             gameBoard.revealCell(x, y);
         }
@@ -398,8 +390,29 @@ public class Main {
         switch (currentGameStatus) {
             case Won:
                 System.out.println(gameBoard);
+                Game game = new Game(currentGameStatus, players.get(currentPlayer).getNickname(), gameBoard.toString(), gameBoard.getTime());
                 System.out.println("Parabéns, você venceu!");
-                lastWonGames[(wonGameCount) % lastWonGames.length] = new Game(currentGameStatus, players.get(currentPlayer).getNickname(), gameBoard.toString(), gameBoard.getTime());
+                if(bestGames.isEmpty()) bestGames.add(game);
+                else{
+                    if(bestGames.size() < 3) bestGames.add(game);
+                    else{
+                        for(Game g : bestGames){
+                            if (game.getGameTime() < g.getGameTime())
+                            {
+                                bestGames.add(game);
+                                bestGames.remove(g);
+                                bestGames.sort(Comparator.comparing(Game::getGameTime));
+                                break;
+                            }
+                        }
+                    }
+                }
+                //gets the current list of this player's games
+                List<Game> gamesList = new ArrayList<>(gameHistory.get(players.get(currentPlayer)));
+                //adds the current game to that list
+                gamesList.add(game);
+                //overwrites that list on the map
+                gameHistory.put(players.get(currentPlayer), gamesList);
                 wonGameCount++;
                 break;
             case Lost:
@@ -413,8 +426,8 @@ public class Main {
     /**
      * Writes the last won games and their respective status to the console
      */
-    private static void showLastGames() {
-        for (Game game : lastWonGames) {
+    private static void showBestGames() {
+        for (Game game : bestGames) {
             if (game == null) break;
             System.out.println("==========================================");
             System.out.println(game);

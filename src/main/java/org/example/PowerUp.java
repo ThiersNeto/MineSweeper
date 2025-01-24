@@ -11,30 +11,20 @@ import java.util.*;
  */
 public class PowerUp {
     private PowerUpType type;
-    private int usesRemaining; // Para PowerUps incrementais
 
-    public PowerUp(PowerUpType type, int uses) {
+    public PowerUp(PowerUpType type) {
         this.type = type;
-        this.usesRemaining = uses;
     }
 
     public PowerUpType getType() {
         return type;
     }
 
-    public int getUsesRemaining() {
-        return usesRemaining;
-    }
 
     public boolean activate(Board board, Coordinate coord) {
-        if (usesRemaining <= 0) {
-            System.out.println("Nenhum uso restante para este PowerUp.");
-            return false;
-        }
-
         switch (type) {
             case SHIELD:
-                return activateShield(board, coord);
+                return activateShield(board);
             case ICE:
                 return activateIce(board);
             case LINE:
@@ -51,9 +41,10 @@ public class PowerUp {
      * Impede que uma mina exploda na próxima jogada em que o jogador abrir uma célula minada.
      * Coloca uma bandeira permanente na célula minada.
      */
-    private boolean activateShield(Board board, Coordinate coord) {
+    private boolean activateShield(Board board) {
         System.out.println("Shield ativado! Você está protegido na próxima jogada.");
-        usesRemaining--;
+        board.activateShield();
+
         return true;
     }
 
@@ -64,7 +55,6 @@ public class PowerUp {
         System.out.println("Ice ativado! O tempo está congelado por 3 jogadas.");
         //board.freezeTime(3); // Congela o tempo por 3 jogadas
         board.activateIce(3);
-        usesRemaining--;
         return true;
     }
 
@@ -82,7 +72,6 @@ public class PowerUp {
             }
         }
         System.out.println("Line ativado! A linha " + row + " foi revelada.");
-        usesRemaining--;
         return true;
     }
 
@@ -100,7 +89,6 @@ public class PowerUp {
             }
         }
         System.out.println("Column ativado! A coluna " + col + " foi revelada.");
-        usesRemaining--;
         return true;
     }
 
