@@ -351,11 +351,12 @@ public class Board {
         iceActive = true;
     }
 
-    public void deactivateIce()
-    {
+    public void deactivateIce() {
         iceActive = false;
         startingTime = startingTime + (System.currentTimeMillis() - iceStart);
         iceStart = 0L;
+    }
+
     public int getRows() {
         return rows;
     }
