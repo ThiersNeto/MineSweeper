@@ -2,6 +2,7 @@ package org.example;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ public class Board {
     private int flagCount;
     private long startingTime; //will need to mess with this for ice
     private boolean cheatMode;
+    private int frozenTurns;
 
     //V2 (TODO board and starting time and even totalMines can all be final)
     private Cell[][] board;
@@ -42,6 +44,7 @@ public class Board {
         startingTime = System.currentTimeMillis();
         board = new Cell[rows][cols];
         commandsHistory = new ArrayList<>();
+        frozenTurns = 0;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -186,6 +189,10 @@ public class Board {
         return true;
     }
 
+    public void freezeTime(int turns) {
+        this.frozenTurns = turns;
+        System.out.println("Tempo congelado por " + turns + " jogadas.");
+    }
 
 
     /**
@@ -203,6 +210,7 @@ public class Board {
         updateBoardVisual();
         //updates the visual of the clicked mine
         board[x][y].setChar('\u25C8'); //◈;
+        System.out.println(this);
     }
 
     /**
@@ -286,6 +294,31 @@ public class Board {
         }
     }
 
+    // V2
+    private void placePowerUp() {
+        Random random = new Random();
+        List<PowerUpType> powerUpTypes = Arrays.asList(
+                PowerUpType.SHIELD,
+                PowerUpType.ICE,
+                PowerUpType.LINE,
+                PowerUpType.COLUMN
+        );
+
+        for (PowerUpType powerUpType : powerUpTypes) {
+            boolean placed = false;
+            while (!placed) {
+                int x = random.nextInt(rows);
+                int y = random.nextInt(cols);
+
+                Cell cell = board[x][y];
+                if (!cell.hasMine() && !cell.hasPowerUp()) {
+                    cell.setPowerUp(powerUpType);
+                    placed = true;
+                }
+            }
+        }
+    }
+
     public void addCommand(String command)
     {
         commandsHistory.add(command);
@@ -323,6 +356,12 @@ public class Board {
         iceActive = false;
         startingTime = startingTime + (System.currentTimeMillis() - iceStart);
         iceStart = 0L;
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
     }
 
     /**

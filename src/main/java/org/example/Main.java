@@ -134,7 +134,7 @@ public class Main {
                 }
             }
             //coordinates are invalid, return to the beginning of the loop
-            if (!gameBoard.isCoordinateValid(x, y)) {
+            if (slicedCommand[0].substring(1).equals("open") && !gameBoard.isCoordinateValid(x, y)) {
                 System.out.println("Coordenadas invalidas!");
                 continue;
             }
@@ -188,10 +188,74 @@ public class Main {
                     gameBoard.showCommandHistory();
                     break;
                 case ("inventory"):
+                    showPlayerInventory();
                     System.out.println("we're just a bunch of rizzlers");
                     break;
                 case ("use"):
-                    System.out.println("Erm, what the sigma?");
+                    System.out.println("=== PowerUps Disponíveis ===");
+                    System.out.println("1. Shield: Impede que uma mina exploda na próxima jogada.");
+                    System.out.println("2. Ice: Congela o tempo por 3 jogadas.");
+                    System.out.println("3. Line: Revela todas as células de uma linha, exceto minas.");
+                    System.out.println("4. Column: Revela todas as células de uma coluna, exceto minas.");
+                    System.out.print("Escolha um PowerUp (1-4) ou 0 para cancelar: ");
+
+                    int powerUpChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if(powerUpChoice < 1 || powerUpChoice > 4) {
+                        System.out.println("Escolha inválida");
+                        break;
+                    }
+
+                    PowerUpType powerUpType = powerUpType = null;
+                    switch (powerUpChoice) {
+                        case 1:
+                            powerUpType = PowerUpType.SHIELD;
+                            break;
+                        case 2:
+                            powerUpType = PowerUpType.ICE;
+                            break;
+                        case 3:
+                            powerUpType = PowerUpType.LINE;
+                            break;
+                        case 4:
+                            powerUpType = PowerUpType.COLUMN;
+                            break;
+                        default:
+                            System.out.println("Escolha inválida. Operação cancelada.");
+                            break;
+                    }
+
+                    if (powerUpType == null) {
+                        return;
+                    }
+
+                    PowerUp powerUp = players.get(currentPlayer).getPowerUp(powerUpType);
+
+                    if (powerUp == null) {
+                        System.out.println("Você não tem um " + powerUpType + " no inventário.");
+                        break;
+                    }
+
+                    Coordinate coord = null;
+                    if (powerUpType == PowerUpType.LINE || powerUpType == PowerUpType.COLUMN) {
+                        System.out.print("Digite a linha (A, B, C, ...): ");
+                        char rowChar = scanner.next().toUpperCase().charAt(0);
+                        System.out.print("Digite a coluna (1, 2, 3, ...): ");
+                        int col = scanner.nextInt();
+                        scanner.nextLine();
+
+                        int row = asciiConvert(rowChar);
+                        int colIndex = asciiConvert(col);
+                        coord = new Coordinate(row, colIndex);
+                    }
+
+                    boolean activated = powerUp.activate(gameBoard, coord);
+                    if (activated) {
+                        System.out.println(powerUpType + " ativado com sucesso!");
+                    } else {
+                        System.out.println("Falha ao ativar " + powerUpType + ".");
+                    }
                     break;
                 case ("quit"):
                     System.out.print("Tem a certeza (y/n): ");
@@ -230,6 +294,10 @@ public class Main {
         //if there is the need to get player i can do a current with the index of the list!!!
         gameBoard = new Board(settings.rows(), settings.cols(), settings.mines());
         currentGameStatus = GameStatus.Playing;
+
+        Player player = players.get(currentPlayer);
+        player.assignRandomPowerUps();
+
         //get time from board (needs to be saved on player history)
         //maybe a map where the key is the key and tha game is the value for top 3 fastest
         //ACTUALLY THO, UM MAPA (KEY = PLAYER; VALUE = LIST<GAMES> POGGIWOGGI
@@ -258,6 +326,26 @@ public class Main {
             gameHistory.put(player, new ArrayList<>());
         }
         chooseDifficulty();
+    }
+
+    private static void showPlayerInventory() {
+        Player currentPlayerObj = players.get(currentPlayer);
+        List<PowerUp> powerUps = currentPlayerObj.getInventory().getPowerUps();
+
+        if (powerUps.isEmpty()) {
+            System.out.println("Seu inventário está vazio.");
+            return;
+        }
+
+        System.out.println("=== INVENTÁRIO ===");
+        for (int i = 0; i < powerUps.size(); i++) {
+            PowerUp powerUp = powerUps.get(i);
+            System.out.printf("%d. %s (Usos restantes: %d)\n",
+                    i + 1,
+                    powerUp.getType(),
+                    powerUp.getUsesRemaining()
+            );
+        }
     }
 
     /**
