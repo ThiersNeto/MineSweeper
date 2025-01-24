@@ -1,12 +1,8 @@
-package org.example.UI;
+package org.example;
 
 //import java.util.Scanner;
 //import java.util.List;
 //import java.util.ArrayList;
-import org.example.Game.Game;
-import org.example.Model.Settings;
-import org.example.Player.Player;
-
 import java.util.*; //imports everything I could ever need :)
 
 /**

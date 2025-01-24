@@ -1,6 +1,4 @@
-package org.example.Inventory;
-import org.example.PowerUp.PowerUp;
-
+package org.example;
 import java.util.*;
 
 public class Inventory {
