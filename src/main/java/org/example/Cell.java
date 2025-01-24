@@ -5,9 +5,15 @@ public class Cell {
     private boolean flagged;
     private boolean revealed;
     private int neighbouringMines;
+    private char visual;
 
     public Cell(){
-
+        //on creation values will all be as follows:
+        this.mine = false;
+        this.flagged = false;
+        this.revealed = false;
+        this.neighbouringMines = 0;
+        this.visual = '\u25A0';
     }
 
     public boolean hasMine()
@@ -15,9 +21,9 @@ public class Cell {
         return this.mine;
     }
 
-    public boolean placeMine()
+    public void placeMine()
     {
-        return this.mine = true;
+        this.mine = true;
     }
 
     public boolean isRevealed()
@@ -25,9 +31,9 @@ public class Cell {
         return this.revealed;
     }
 
-    public boolean revealCell()
+    public void revealCell()
     {
-        return this.revealed = true;
+        this.revealed = true;
     }
 
     public boolean isFlagged(){
@@ -45,5 +51,13 @@ public class Cell {
 
     public void setNeighbouringMines(int neighbouringMines){
         this.neighbouringMines = neighbouringMines;
+    }
+
+    public void setChar(char visual){
+        this.visual = visual;
+    }
+
+    public char getChar(){
+        return this.visual;
     }
 }

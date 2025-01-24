@@ -102,6 +102,11 @@ public class Main {
             System.out.println("[Escreva /help para ver os comandos]");
             System.out.print("Comando > ");
             String inputtedCommand = scanner.nextLine();
+            if(inputtedCommand.isBlank()){
+                System.out.println("Nenhum comando detetado. \nPor favor pressione Enter se entende.");
+                scanner.nextLine();
+                continue;
+            }
             String[] slicedCommand = inputtedCommand.split(" ");
 
             int x = -1;
@@ -119,6 +124,7 @@ public class Main {
 
             System.out.print("\n");
             boolean toggled;
+            gameBoard.addCommand(inputtedCommand);
             //remove the "/" from the command
             switch (slicedCommand[0].substring(1)) {
                 case ("help"):
@@ -162,7 +168,7 @@ public class Main {
                     System.out.println("it never skibidis but it ohios");
                     break;
                 case ("history"):
-                    System.out.println("Should I just skibidi?");
+                    gameBoard.showCommandHistory();
                     break;
                 case ("inventory"):
                     System.out.println("we're just a bunch of rizzlers");
@@ -178,6 +184,9 @@ public class Main {
                         return;  // Exit to the menu
                     }
                     break;
+                default:
+                    System.out.println("Comando inserido é inválido");
+                    gameBoard.clearInvalidCommand(); //clears the last inserted command since it's invalid
             }
             System.out.print('\n');
 
@@ -221,7 +230,7 @@ public class Main {
         Player player = new Player(nickname);
         if(players.contains(player)){
             currentPlayer = players.indexOf(player);
-            System.out.println("Bem vindo de volta " + nickname + "!");
+            System.out.println("\nBem vindo de volta " + nickname + "!");
         }
         else{
             players.add(player);

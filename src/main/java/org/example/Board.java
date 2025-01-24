@@ -1,6 +1,8 @@
 package org.example;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -8,18 +10,16 @@ import java.util.concurrent.TimeUnit;
  * Class Board represents the board
  */
 public class Board {
-    private char[][] board;
-    private char[][] visualGrid;
-    private int[][] neighboringCountGrid;
-    private boolean[][] minesGrid;
-    private boolean[][] flagsGrid;
-    private boolean[][] revealedGrid;
     private int rows;
     private int cols;
     private int totalMines;
     private int flagCount;
     private long startingTime;
     private boolean cheatMode;
+
+    //V2 (TODO board and starting time and even totalMines can all be final)
+    private Cell[][] board;
+    private List<String> commandsHistory;
 
     /**
      *
@@ -28,26 +28,18 @@ public class Board {
      * @param totalMines    Number of Mines
      */
     public Board(int rows, int cols, int totalMines) {
-        //THIERS, AQUI É PRECISO ALTERAR ALGUMA LOGICA, DESCULPA NAO TIVE TEMPO
-        //basicamente inicializa apenas a variavel board (literalmente board com b minusculo)
-        //todas as outras ja nao sao necessarias pq essas informações agora vão estar inseridas em cada Cell
-        //informações como se tem mina, se ta flagged etc
         this.rows = rows;
         this.cols = cols;
         this.totalMines = totalMines;
+
         flagCount = totalMines;
-
         startingTime = System.currentTimeMillis();
-
-        visualGrid = new char[rows][cols];
-        minesGrid = new boolean[rows][cols];
-        revealedGrid = new boolean[rows][cols];
-        flagsGrid = new boolean[rows][cols];
-        neighboringCountGrid = new int[rows][cols];
+        board = new Cell[rows][cols];
+        commandsHistory = new ArrayList<>();
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                visualGrid[i][j] = '■';
+                board[i][j] = new Cell();
             }
         }
         placeMines();
@@ -64,8 +56,9 @@ public class Board {
             int x = random.nextInt(rows);
             int y = random.nextInt(cols);
 
-            if (!minesGrid[x][y]) {
-                minesGrid[x][y] = true;
+            if(!board[x][y].hasMine())
+            {
+                board[x][y].placeMine();
                 minesPlaced++;
             }
         }
@@ -79,7 +72,7 @@ public class Board {
     private void setNeighboringMineCounts() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                neighboringCountGrid[i][j] = countNeighboringMines(i, j);
+                board[i][j].setNeighbouringMines(countNeighboringMines(i, j));
             }
         }
     }
@@ -99,7 +92,7 @@ public class Board {
 
                 int nx = x + i;
                 int ny = y + j;
-                if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && minesGrid[nx][ny]) {
+                if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && board[nx][ny].hasMine()) {
                     count++;
                 }
             }
@@ -114,14 +107,14 @@ public class Board {
      * @param y Column
      */
     public void revealCell(int x, int y) {
-        if ( !isCoordinateValid(x, y) || revealedGrid[x][y] || minesGrid[x][y])  //se já tiver revelado ou posição invalida, sair
+        if ( !isCoordinateValid(x, y) || board[x][y].isRevealed() || board[x][y].hasMine())  //se já tiver revelado ou posição invalida, sair
             return;
 
-        revealedGrid[x][y] = true;
+        board[x][y].revealCell();
         updateVisual(x,y);
 
         //se a celula não tiver minas ou minas vizinhas, abrir as vizinhas
-        if (neighboringCountGrid[x][y] == 0) {
+        if (board[x][y].getNeighbouringMines() == 0) {
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (i == 0 && j == 0) continue; // Passar a frente a célula atual (x, y)
@@ -140,21 +133,21 @@ public class Board {
     private void updateVisual(int x, int y){
         //orderm de operações é importante aqui
 
-        if(!revealedGrid[x][y]){
-            visualGrid[x][y] = '■';
+        if(!board[x][y].isRevealed()){
+            board[x][y].setChar('\u25A0'); //■
             if(cheatMode){
-                if(minesGrid[x][y]) visualGrid[x][y] = '◆';
+                if(board[x][y].hasMine()) board[x][y].setChar('\u25C6'); //◆
             }
-            if(flagsGrid[x][y]) visualGrid[x][y] = '▶';
+            if(board[x][y].isFlagged()) board[x][y].setChar('\u25B6'); //▶
 
             return;
         }
 
         //case cell is revealed
-        visualGrid[x][y] = '□';
-        if(neighboringCountGrid[x][y] > 0) visualGrid[x][y] = (char) (neighboringCountGrid[x][y] + '0'); //maneira de converter char para int, o +0 serve para mudar o codigo ascii
-        if(flagsGrid[x][y]) visualGrid[x][y] = '▶';
-        if(minesGrid[x][y]) visualGrid[x][y] = '◆';
+        board[x][y].setChar('\u25A1'); //□
+        if(board[x][y].getNeighbouringMines() > 0) board[x][y].setChar((char) (board[x][y].getNeighbouringMines() + '0')); //maneira de converter char para int, o +0 serve para mudar o codigo ascii
+        if(board[x][y].isFlagged()) board[x][y].setChar('\u25B6'); //▶
+        if(board[x][y].hasMine()) board[x][y].setChar('\u25C6'); //◆
     }
 
     /**
@@ -167,16 +160,17 @@ public class Board {
      * @return "true" if user managed to set/unset a flag
      */
     public boolean toggleFlagStatus(int x, int y){
-        if(!flagsGrid[x][y] && flagCount <= 0)
+        if(!board[x][y].isFlagged() && flagCount <= 0){
+            System.out.println("Sem bandeiras disponíveis!");
             return false;
+        }
 
-        if(!flagsGrid[x][y])
+        if(!board[x][y].isFlagged())
             flagCount--;
         else
             flagCount++;
 
-
-        flagsGrid[x][y] = !flagsGrid[x][y];
+        board[x][y].toggleFlag();
 
         updateVisual(x,y);
 
@@ -194,12 +188,12 @@ public class Board {
     public void setLosingBoard(int x, int y){
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                revealedGrid[i][j] = true;
+                board[i][j].revealCell();
             }
         }
         updateBoardVisual();
         //updates the visual of the clicked mine
-        visualGrid[x][y] = '◈';
+        board[x][y].setChar('\u25C8'); //◈;
     }
 
     /**
@@ -211,9 +205,9 @@ public class Board {
         boolean allNonMinesRevealed = true;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                if ((minesGrid[i][j] && !flagsGrid[i][j]))
+                if ((board[i][j].hasMine() && !board[i][j].isFlagged()))
                     allMinesFlagged = false;
-                if((!minesGrid[i][j] && !revealedGrid[i][j]))
+                if((!board[i][j].hasMine() && !board[i][j].isRevealed()))
                     allNonMinesRevealed = false;
 
 
@@ -233,7 +227,7 @@ public class Board {
         do{
             x = random.nextInt(rows);
             y = random.nextInt(cols);
-        } while(minesGrid[x][y] || revealedGrid[x][y] || !isCoordinateValid(x,y)); //repeats if there is a mine, is already revealed or is not valid
+        } while(board[x][y].hasMine() || board[x][y].isRevealed() || !isCoordinateValid(x,y)); //repeats if there is a mine, is already revealed or is not valid
 
         return new Coordinate(x,y);
     }
@@ -246,7 +240,7 @@ public class Board {
      * @return "true" if it has a mine
      */
     public boolean hasMine(int x, int y) {
-        return minesGrid[x][y];
+        return board[x][y].hasMine();
     }
 
     /**
@@ -283,6 +277,23 @@ public class Board {
         }
     }
 
+    public void addCommand(String command)
+    {
+        commandsHistory.add(command);
+    }
+
+    public void showCommandHistory(){
+        System.out.println("HISTÓRICO DE COMANDOS UTILIZADOS: ");
+        for(int i = 0; i < commandsHistory.size(); i++)
+        {
+            System.out.printf("%d. %s\n", (i + 1), commandsHistory.get(i));
+        }
+    }
+
+    public void clearInvalidCommand(){
+        commandsHistory.remove(commandsHistory.size() - 1);
+    }
+
     /**
      * Build a string of the board, with statistics
      * Takes advantage of Ascii to turn a number into a character, A is 65 in ascii, the following follow in alphabetic order (B = 66, C = 67)
@@ -292,7 +303,7 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("♥⠀ ");
+        stringBuilder.append("\u2665⠀ "); //♥
         //print columns
         for (int i = 0; i < cols; i++) {
             stringBuilder.append((i)).append("  ");
@@ -301,7 +312,7 @@ public class Board {
         for (int i = 0; i < rows; i++) {
             stringBuilder.append((char) ('A' + i)).append("  "); //print rows // ascii trick explained in javadoc
             for (int j = 0; j < cols; j++) {
-                stringBuilder.append(visualGrid[i][j]).append("  ");
+                stringBuilder.append(board[i][j].getChar()).append("  ");
             }
             stringBuilder.append('\n');
         }
