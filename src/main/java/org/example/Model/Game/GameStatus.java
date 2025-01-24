@@ -1,4 +1,4 @@
-package org.example.Game;
+package org.example.Model.Game;
 
 /**
  * Game Status

@@ -1,6 +1,6 @@
-package org.example.Game;
+package org.example.Model.Game;
 
-import org.example.Model.Settings;
+import org.example.Model.Model.Settings;
 
 import java.util.*;
 
