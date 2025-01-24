@@ -189,10 +189,10 @@ public class Board {
         return true;
     }
 
-    public void freezeTime(int turns) {
+    /*public void freezeTime(int turns) {
         this.frozenTurns = turns;
         System.out.println("Tempo congelado por " + turns + " jogadas.");
-    }
+    }/*
 
 
     /**
@@ -345,8 +345,9 @@ public class Board {
         return (System.currentTimeMillis() - startingTime);
     }
 
-    public void activateIce()
+    public void activateIce(int turns)
     {
+        frozenTurns += turns;
         iceStart = System.currentTimeMillis();
         iceActive = true;
     }

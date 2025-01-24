@@ -3,6 +3,8 @@ package org.example;
 //import java.util.Scanner;
 //import java.util.List;
 //import java.util.ArrayList;
+import org.w3c.dom.ls.LSOutput;
+
 import java.util.*; //imports everything I could ever need :)
 //temp
 
@@ -192,28 +194,39 @@ public class Main {
                     System.out.println("we're just a bunch of rizzlers");
                     break;
                 case ("use"):
-                    System.out.println("=== PowerUps Disponíveis ===");
-                    System.out.println("1. Shield: Impede que uma mina exploda na próxima jogada.");
-                    System.out.println("2. Ice: Congela o tempo por 3 jogadas.");
-                    System.out.println("3. Line: Revela todas as células de uma linha, exceto minas.");
-                    System.out.println("4. Column: Revela todas as células de uma coluna, exceto minas.");
-                    System.out.print("Escolha um PowerUp (1-4) ou 0 para cancelar: ");
-
-                    int powerUpChoice = scanner.nextInt();
-                    scanner.nextLine();
-
-                    if(powerUpChoice < 1 || powerUpChoice > 4) {
-                        System.out.println("Escolha inválida");
-                        break;
+                    List<PowerUp> powerUps = new ArrayList<>(players.get(currentPlayer).getInventory().getPowerUps());
+                    String s = powerUps.size() > 0 ? "Powerups disponíveis: \n" : "Não tem powerups!";
+                    System.out.println(s);
+                    for(int i = 0; i < powerUps.size(); i++)
+                    {
+                        System.out.println((i + 1) + ". " + powerUps.get(i));
                     }
 
-                    PowerUpType powerUpType = powerUpType = null;
+                    PowerUp powerUp = null;
+                    int powerUpChoice = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    if (powerUps.get(powerUpChoice) != null)
+                    {
+                        powerUp = powerUps.get(powerUpChoice);
+                        powerUps.remove(powerUpChoice);
+                    }
+                    else{
+                        System.out.println("Escolha inválida");
+                        continue;
+                    }
+                    /*if(powerUpChoice < 1 || powerUpChoice > 4) {
+                        System.out.println("Escolha inválida");
+                        break;
+                    }*/
+
+                    /*PowerUpType powerUpType = powerUpType = null;
                     switch (powerUpChoice) {
                         case 1:
                             powerUpType = PowerUpType.SHIELD;
                             break;
                         case 2:
                             powerUpType = PowerUpType.ICE;
+                            //gameBoard.activateIce();
                             break;
                         case 3:
                             powerUpType = PowerUpType.LINE;
@@ -228,15 +241,16 @@ public class Main {
 
                     if (powerUpType == null) {
                         return;
-                    }
+                    }*/
 
-                    PowerUp powerUp = players.get(currentPlayer).getPowerUp(powerUpType);
+                    //PowerUp powerUp = players.get(currentPlayer).getPowerUp(powerUpType);
 
-                    if (powerUp == null) {
+                    /*if (powerUp == null) {
                         System.out.println("Você não tem um " + powerUpType + " no inventário.");
                         break;
-                    }
+                    }*/
 
+                    PowerUpType powerUpType = powerUp.getType();
                     Coordinate coord = null;
                     if (powerUpType == PowerUpType.LINE || powerUpType == PowerUpType.COLUMN) {
                         System.out.print("Digite a linha (A, B, C, ...): ");

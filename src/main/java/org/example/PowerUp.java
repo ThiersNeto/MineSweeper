@@ -62,7 +62,8 @@ public class PowerUp {
      */
     private boolean activateIce(Board board) {
         System.out.println("Ice ativado! O tempo está congelado por 3 jogadas.");
-        board.freezeTime(3); // Congela o tempo por 3 jogadas
+        //board.freezeTime(3); // Congela o tempo por 3 jogadas
+        board.activateIce(3);
         usesRemaining--;
         return true;
     }
@@ -101,5 +102,10 @@ public class PowerUp {
         System.out.println("Column ativado! A coluna " + col + " foi revelada.");
         usesRemaining--;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "" + type;
     }
 }
