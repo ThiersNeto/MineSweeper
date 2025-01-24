@@ -20,6 +20,8 @@ public class Board {
     //V2 (TODO board and starting time and even totalMines can all be final)
     private Cell[][] board;
     private List<String> commandsHistory;
+    private long iceStart;
+    private boolean iceActive;
 
     /**
      *
@@ -31,6 +33,10 @@ public class Board {
         this.rows = rows;
         this.cols = cols;
         this.totalMines = totalMines;
+
+        //on the beginning ice will never be able to start as activated right away
+        this.iceStart = 0;
+        this.iceActive = false;
 
         flagCount = totalMines;
         startingTime = System.currentTimeMillis();
@@ -306,6 +312,19 @@ public class Board {
         return (System.currentTimeMillis() - startingTime);
     }
 
+    public void activateIce()
+    {
+        iceStart = System.currentTimeMillis();
+        iceActive = true;
+    }
+
+    public void deactivateIce()
+    {
+        iceActive = false;
+        startingTime = startingTime + (System.currentTimeMillis() - iceStart);
+        iceStart = 0L;
+    }
+
     /**
      * Build a string of the board, with statistics
      * Takes advantage of Ascii to turn a number into a character, A is 65 in ascii, the following follow in alphabetic order (B = 66, C = 67)
@@ -331,7 +350,15 @@ public class Board {
 
         stringBuilder.append('\n').append("\tBandeiras Disponiveis: ").append(flagCount);
 
-        long elapsedTime = System.currentTimeMillis() - startingTime;
+        long elapsedTime;
+        if(iceActive)
+        {
+            long frozenTime = System.currentTimeMillis() - iceStart;
+            elapsedTime = System.currentTimeMillis() - startingTime - frozenTime;
+        }
+        else {
+            elapsedTime = System.currentTimeMillis() - startingTime;
+        }
         String formattedTime = String.format("%02d:%02d:%02d",
                 TimeUnit.MILLISECONDS.toHours(elapsedTime),
                 TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60,

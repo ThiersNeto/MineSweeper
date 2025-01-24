@@ -2,6 +2,9 @@ package org.example;
 
 import java.util.*;
 
+/**
+ * Represents a difficulty to be chosen
+ */
 public enum Difficulty {
     Starter(1, new Settings(9,9,10)),
     Pro(2, new Settings(10,10,16)),
@@ -12,6 +15,13 @@ public enum Difficulty {
     private static Map map = new HashMap<>();
 
     //construtor do enum que impoe um valor chave e associa um tipo de settings
+
+    /**
+     * Enum's constructor
+     *
+     * @param value integer value associated with the difficulty, useful for the automation of difficulty select on main.
+     * @param settings the settings associated with this difficulty (e.g Starter = 9x9 matrix with 10 bombs)
+     */
     private Difficulty(int value, Settings settings){
         this.value = value;
         this.settings = settings;
