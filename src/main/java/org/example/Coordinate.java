@@ -17,10 +17,18 @@ public class Coordinate {
         this.y = y;
     }
 
+    /**
+     *
+     * @return Row
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     *
+     * @return Column
+     */
     public int getY() {
         return y;
     }

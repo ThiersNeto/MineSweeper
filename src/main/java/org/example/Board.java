@@ -19,7 +19,7 @@ public class Board {
     private boolean cheatMode;
     private int frozenTurns;
 
-    //V2 (TODO board and starting time and even totalMines can all be final)
+    //V2
     private Cell[][] board;
     private List<String> commandsHistory;
     private long iceStart;
@@ -168,6 +168,8 @@ public class Board {
     /**
      * Toggles the flag on a cell
      * Increases or decreases the amount of flags
+     * <br>
+     * On this new version, only allows for a flag to be freely toggled if it was not locked by the Shield powerup
      *
      * @param x Row
      * @param y Column
@@ -201,11 +203,24 @@ public class Board {
         return true;
     }
 
+    /**
+     * Used to externally ask for an internal check on whether or not a specific Cell on the board has a Power Up. <br>
+     * Will check the Cell present on the given coordinates of the board
+     * @param x - Row
+     * @param y - Column
+     * @return True if there is a powerup on the specified Cell, false otherwise
+     */
     public boolean checkForPowerUp(int x, int y)
     {
         return board[x][y].hasPowerUp();
     }
 
+    /**
+     * Accesses a Cell present on the board by the given params to get the associated power up.
+     * @param x - Row
+     * @param y - Column
+     * @return The power up that's present on that Cell
+     */
     public PowerUp getPowerUp(int x, int y)
     {
         return new PowerUp(board[x][y].getPowerUp());
@@ -312,6 +327,10 @@ public class Board {
     }
 
     // V2
+
+    /**
+     * Randomly places power ups on Cells that don't neither contains mines nor other powerups
+     */
     private void placePowerUp() {
         Random random = new Random();
         List<PowerUpType> powerUpTypes = Arrays.asList(
@@ -331,17 +350,24 @@ public class Board {
                 if (!cell.hasMine() && !cell.hasPowerUp()) {
                     cell.setPowerUp(powerUpType);
                     placed = true;
-                    System.out.println("Inserido powerup " + powerUpType + " em " + x + ", " + y);
+                    //System.out.println("Inserido powerup " + powerUpType + " em " + x + ", " + y);
                 }
             }
         }
     }
 
+    /**
+     * Adds a command to the list of used commands during this game
+     * @param command String of what was read by the scanner
+     */
     public void addCommand(String command)
     {
         commandsHistory.add(command);
     }
 
+    /**
+     * Prints all previously used commands on this game
+     */
     public void showCommandHistory(){
         System.out.println("HISTÓRICO DE COMANDOS UTILIZADOS: ");
         for(int i = 0; i < commandsHistory.size(); i++)
@@ -350,19 +376,38 @@ public class Board {
         }
     }
 
+    /**
+     * If the command inserted was deemed invalid, that command is then removed
+     */
     public void clearInvalidCommand(){
         commandsHistory.remove(commandsHistory.size() - 1);
     }
 
+    /**
+     * Checks whether or not the Cell by the given coordinate is currently flagged
+     * @param x Row
+     * @param y Column
+     * @return True if the Cell is flagged, false otherwise
+     */
     public boolean isFlagged(int x, int y)
     {
         return board[x][y].isFlagged();
     }
 
+    /**
+     * Gets the current elapsed time of this game
+     * @return
+     */
     public long getTime(){
         return (System.currentTimeMillis() - startingTime);
     }
 
+    /**
+     * Adds the specified amount of turns to the duration of the Ice power up.
+     * <br>
+     * If this power up was not previously active, then it also activates the effects of Ice
+     * @param turns - Number of turns to increment to Ice duration
+     */
     public void activateIce(int turns)
     {
         frozenTurns += turns;
@@ -375,37 +420,65 @@ public class Board {
         }
     }
 
+    /**
+     * Deactivates the effects of ice and recalculates the time that was frozen
+     */
     public void deactivateIce() {
         iceActive = false;
         startingTime = startingTime + (System.currentTimeMillis() - iceStart);
         iceStart = 0L;
     }
 
+    /**
+     * Gets the amount of frozen turns left
+     * @return
+     */
     public int getFrozenTurns()
     {
         return this.frozenTurns;
     }
 
+    /**
+     * Decrements the amount of frozen turns the player has
+     */
     public void passFrozenTurn()
     {
         frozenTurns --;
     }
 
+    /**
+     * Checks whether the Ice power up is currently active or not
+     * @return True if the ice power up is active, false otherwise
+     */
     public boolean isIceActive()
     {
         return this.iceActive;
     }
 
+    /**
+     * Increments the amount of extra lives (lives that can be saved by having shield)
+     */
     public void activateShield()
     {
         this.shieldedPlays ++;
     }
 
+    /**
+     * Checks the amount of plays protected by Shield that the player still has
+     * @return Number of shielded plays
+     */
     public int getShieldedPlays()
     {
         return this.shieldedPlays;
     }
 
+    /**
+     * Shields the player, preventing it's death due to a mine's explosion.
+     * <br>
+     * Also flags and locks the Cell so that the flag can never be removed
+     * @param x - Row to lock and flag
+     * @param y - Columns to lock and flag
+     */
     public void shieldPlayer(int x, int y)
     {
         board[x][y].toggleFlag();
@@ -413,11 +486,6 @@ public class Board {
         flagCount --;
         shieldedPlays --;
         updateVisual(x,y);
-    }
-
-    public boolean isCellLocked(int x, int y)
-    {
-        return board[x][y].isCellLocked();
     }
 
     public int getRows() {

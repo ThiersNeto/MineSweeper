@@ -27,7 +27,9 @@ public enum Difficulty {
         this.settings = settings;
     }
 
+
     //mapeamento dos pares chave valor (ex: valor 1 = dificuldade starter)
+
     static {
         for (Difficulty difficulty : Difficulty.values()){
             map.put(difficulty.value, difficulty);
@@ -35,11 +37,21 @@ public enum Difficulty {
     }
 
     //basicamente o getter pelo seu valor inteiro
+
+    /**
+     * Gets the difficulty associated to the given integer value
+     * @param difficulty Integer to get the difficulty (Ex: 1 = Starter)
+     * @return
+     */
     public static Difficulty valueOfInt(int difficulty){
         return (Difficulty) map.get(difficulty);
     }
 
-    //checks if a difficulty exists and returns true or false
+    /**
+     * Checks if there exists any difficulty associated to the given Integer value
+     * @param value Integer value to check for correspondent difficulties
+     * @return True if there is a correspondent value, false if not.
+     */
     public static boolean exists(int value)
     {
         return map.containsKey(value);
@@ -49,6 +61,10 @@ public enum Difficulty {
         return value;
     }
 
+    /**
+     *
+     * @return the settings associated with this instance of difficulty
+     */
     public Settings getSettings(){
         return this.settings;
     }

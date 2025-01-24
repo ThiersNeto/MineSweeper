@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Used to store statistics of a completed game
  */
-//This class is used solely for aid, no other class depends on it to function
 public class Game {
     private GameStatus gameStatus;
     private String nickname;
@@ -20,6 +19,10 @@ public class Game {
         this.time = time;
     }
 
+    /**
+     * Checks the time a game took to complete
+     * @return
+     */
     public long getGameTime(){
         return this.time;
     }
@@ -35,6 +38,5 @@ public class Game {
         );
         sb.append(formattedTime);
         return sb.toString();
-        //return "\tAlcunha: " + nickname + "\n" + "\tResultado: " + gameStatus + "\n\n" + board;
     }
 }
