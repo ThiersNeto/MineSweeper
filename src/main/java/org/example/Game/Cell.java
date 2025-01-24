@@ -1,4 +1,4 @@
-package org.example.Model.Game;
+package org.example.Game;
 
 public class Cell {
     private boolean mine;

@@ -1,5 +1,5 @@
-package org.example.Model.Inventory;
-import org.example.Model.PowerUp.PowerUp;
+package org.example.Inventory;
+import org.example.PowerUp.PowerUp;
 
 import java.util.*;
 

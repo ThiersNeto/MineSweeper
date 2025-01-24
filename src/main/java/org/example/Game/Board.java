@@ -1,4 +1,4 @@
-package org.example.Model.Game;
+package org.example.Game;
 
 import Cell;
 import Coordinate;
