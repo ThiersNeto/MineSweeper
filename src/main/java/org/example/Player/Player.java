@@ -1,4 +1,7 @@
-package org.example;
+package org.example.Player;
+
+import org.example.Game.Game;
+import org.example.Inventory.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;

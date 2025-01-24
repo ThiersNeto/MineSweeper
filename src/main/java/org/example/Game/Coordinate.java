@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Game;
 
 /**
  * Represents a coordinate on the board, x-y

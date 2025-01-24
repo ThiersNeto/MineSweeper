@@ -1,6 +1,4 @@
-package org.example;
-
-import java.util.stream.LongStream;
+package org.example.Game;
 
 /**
  * Game Status

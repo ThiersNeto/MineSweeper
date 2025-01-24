@@ -1,6 +1,8 @@
-package org.example;
+package org.example.Game;
 
-import java.text.SimpleDateFormat;
+import Cell;
+import Coordinate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

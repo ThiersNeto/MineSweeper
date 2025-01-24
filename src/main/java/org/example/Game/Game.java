@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Game;
 
 import java.util.concurrent.TimeUnit;
 
