@@ -1,49 +1,46 @@
 package org.example;
 
-//import java.util.Scanner;
-//import java.util.List;
-//import java.util.ArrayList;
-import org.w3c.dom.ls.LSOutput;
-
-import java.util.*; //imports everything I could ever need :)
-//temp
+import java.util.*;
 
 /**
  * Main Class
  */
 public class Main {
-    //main is the equivalent of GameManager in Unity!!!
-    //static int rows = 9, cols = 9, mines = 10;
+
     static int lastGameAmount = 10;
     static Board gameBoard;
     static int gameCount = 1;
     static int wonGameCount;
     static GameStatus currentGameStatus;
     static Game[] lastWonGames;
-    //static String nickname;
+
 
     static boolean gameRunning = false;
     static Scanner scanner = new Scanner(System.in);  // Global Scanner
 
-
-    //V2 addons here
     static List<Player> players;
     static int currentPlayer; //lets us know the index of the currentPlayer for easier access on the list
     static Map<Player, List<Game>> gameHistory; //stores games won by a player
     static List<Game> bestGames;
 
 
+    /**
+     *
+     *  Application entry point that initializes game state and launches the menu system
+     *
+     *  @param args Command-line arguments (not currently utilized)
+     */
     public static void main(String[] args) {
         // Menu inicial
         players = new ArrayList<>();
         gameHistory = new HashMap<>();
-        //lastWonGames = new Game[lastGameAmount];
         bestGames = new ArrayList<>();
         showStartMenu();
     }
 
     /**
-     * Writes the initial menu on the console
+     *
+     * Displays and manages the main game menu interface.
      */
     private static void showStartMenu() {
         int choice;
@@ -78,6 +75,12 @@ public class Main {
         }
     }
 
+    /**
+     * Handles difficulty selection through console interaction.
+     * <p>
+     * Presents a menu of available difficulty levels and manages user input validation.
+     * Continuously prompts until a valid difficulty is selected.
+     */
     public static void chooseDifficulty(){
         int choice = 0;
         do{
@@ -101,7 +104,9 @@ public class Main {
     }
 
     /**
-     * Reads, interprets and executes commands
+     * Processes and executes player commands during gameplay.
+     * <p>
+     * Manages command parsing, validation, and execution while maintaining game state.
      */
     public static void interpretCommands() {
         do {
@@ -183,11 +188,8 @@ public class Main {
                     System.out.println("Batota " + (toggled ? "ativada" : "desativada"));
                     break;
                 case ("wins"):
-                    for(Player p : players)
-                    {
-                        //the toString of class game will print it all for me :)
+                    for(Player p : players) {
                         System.out.println(gameHistory.get(p));
-                        //if this no worki as intended then just \n that
                     }
                     break;
                 case ("top"):
@@ -284,12 +286,11 @@ public class Main {
     }
 
 
-
     /**
+     *
      * Asks for a nickname and begins the game.
      */
     public static void startGame(Settings settings) {
-        //System.out.println("GAME START GOT: " + settings);
         System.out.println();
         //if there is the need to get player i can do a current with the index of the list!!!
         gameBoard = new Board(settings.rows(), settings.cols(), settings.mines());
@@ -304,6 +305,12 @@ public class Main {
         interpretCommands();
     }
 
+    /**
+     *
+     * Handles player nickname selection and registration.
+     * <p>
+     * Manages player identity through these steps:
+     */
     public static void chooseNickname(){
         String nickname;
         System.out.print("Insira a alcunha: ");
@@ -325,6 +332,21 @@ public class Main {
         chooseDifficulty();
     }
 
+    /**
+     * Displays the current player's inventory contents.
+     * <p>
+     * Shows a formatted list of all PowerUps in the player's inventory, numbered for selection.
+     * Handles empty inventory cases with a user-friendly message.
+     * </p>
+     *
+     * <h3>Display Format:</h3>
+     *
+     * <pre>
+     * === INVENTÁRIO ===
+     * 1. SHIELD
+     * 2. ICE
+     * </pre>
+     */
     private static void showPlayerInventory() {
         Player currentPlayerObj = players.get(currentPlayer);
         List<PowerUp> powerUps = currentPlayerObj.getInventory().getPowerUps();
@@ -382,6 +404,7 @@ public class Main {
     }
 
     /**
+     *
      * Saves the game on lastWonGames (if player has won)
      * Increments the number of games played to use on default nicknames
      */
@@ -424,6 +447,7 @@ public class Main {
     }
 
     /**
+     *
      * Writes the last won games and their respective status to the console
      */
     private static void showBestGames() {

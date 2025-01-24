@@ -1,5 +1,13 @@
     package org.example;
 
+
+    /**
+     * Returns the user-friendly textual representation of the PowerUp.
+     *
+     * Overrides the default implementation of {@code toString()} to provide more descriptive names
+     * suitable for display to the user.
+     *
+     */
     public enum PowerUpType {
         SHIELD, ICE, LINE, COLUMN, HINT;
         @Override
