@@ -14,7 +14,7 @@ public class Board {
     private int cols;
     private int totalMines;
     private int flagCount;
-    private long startingTime;
+    private long startingTime; //will need to mess with this for ice
     private boolean cheatMode;
 
     //V2 (TODO board and starting time and even totalMines can all be final)
@@ -110,6 +110,9 @@ public class Board {
         if ( !isCoordinateValid(x, y) || board[x][y].isRevealed() || board[x][y].hasMine())  //se já tiver revelado ou posição invalida, sair
             return;
 
+        //initial flag verification is done on main's side, so if this gets here it means main gave the okay
+        //which means that a flag isn't being opened directly, but via a neighbouring cell
+        if(board[x][y].isFlagged()) toggleFlagStatus(x, y);
         board[x][y].revealCell();
         updateVisual(x,y);
 
@@ -292,6 +295,15 @@ public class Board {
 
     public void clearInvalidCommand(){
         commandsHistory.remove(commandsHistory.size() - 1);
+    }
+
+    public boolean isFlagged(int x, int y)
+    {
+        return board[x][y].isFlagged();
+    }
+
+    public long getTime(){
+        return (System.currentTimeMillis() - startingTime);
     }
 
     /**

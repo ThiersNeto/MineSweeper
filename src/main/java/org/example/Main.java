@@ -112,14 +112,30 @@ public class Main {
             int x = -1;
             int y = -1;
             if (slicedCommand.length > 1) {
-                x = asciiConvert(slicedCommand[1].toUpperCase().charAt(0));
-                y = asciiConvert(slicedCommand[2].toUpperCase().charAt(0));
-
-                //coordinates are invalid, return to the beginning of the loop
-                if (!gameBoard.isCoordinateValid(x, y)) {
-                    System.out.println("Coordenadas invalidas!");
+                //if the format the length is less than 3 but greater than 1, there is a probability the player forgot to space the chars
+                if(slicedCommand.length < 3)
+                {
+                    //if the length of the first string in the array is greater than 1, then there are 2 chars there, meaning a 0 was typed as a0!!
+                    if(slicedCommand[1].length() > 1)
+                    {
+                        x = asciiConvert(slicedCommand[1].toUpperCase().charAt(0));
+                        y = asciiConvert(slicedCommand[1].toUpperCase().charAt(1));
+                    }
+                }
+                //command is in the correct format
+                else if(slicedCommand.length == 3){
+                    x = asciiConvert(slicedCommand[1].toUpperCase().charAt(0));
+                    y = asciiConvert(slicedCommand[2].toUpperCase().charAt(0));
+                }
+                else{
+                    System.out.println("Comando com formato inválido");
                     continue;
                 }
+            }
+            //coordinates are invalid, return to the beginning of the loop
+            if (!gameBoard.isCoordinateValid(x, y)) {
+                System.out.println("Coordenadas invalidas!");
+                continue;
             }
 
             System.out.print("\n");
@@ -251,16 +267,23 @@ public class Main {
      */
     private static void openCell(int x, int y) {
         //check if player hit a mine
-        if (gameBoard.hasMine(x, y)) {
-            gameBoard.setLosingBoard(x, y);
-            System.out.println(gameBoard);
-            System.out.println("Você acertou uma mina! Fim de jogo.");
-            currentGameStatus = GameStatus.Lost;
-            saveGame();
-            return;
+        //only if there is no flag on that cell can it be opened
+        if(!gameBoard.isFlagged(x, y))
+        {
+            if (gameBoard.hasMine(x, y)) {
+                gameBoard.setLosingBoard(x, y);
+                System.out.println(gameBoard);
+                System.out.println("Você acertou uma mina! Fim de jogo.");
+                currentGameStatus = GameStatus.Lost;
+                saveGame();
+                return;
+            }
+            //reveals the cell chosen by the player
+            gameBoard.revealCell(x, y);
         }
-        //reveals the cell chosen by the player
-        gameBoard.revealCell(x, y);
+        else{
+            System.out.println("Não pode abrir uma célula marcada com uma bandeira! Por favor desmarque a bandeira se pretender abrir a célula");
+        }
     }
 
     /**
@@ -273,7 +296,7 @@ public class Main {
             case Won:
                 System.out.println(gameBoard);
                 System.out.println("Parabéns, você venceu!");
-                lastWonGames[(wonGameCount) % lastWonGames.length] = new Game(currentGameStatus, players.get(currentPlayer).getNickname(), gameBoard.toString());
+                lastWonGames[(wonGameCount) % lastWonGames.length] = new Game(currentGameStatus, players.get(currentPlayer).getNickname(), gameBoard.toString(), gameBoard.getTime());
                 wonGameCount++;
                 break;
             case Lost:
